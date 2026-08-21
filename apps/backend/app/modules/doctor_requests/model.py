@@ -1,0 +1,1 @@
+﻿# SQLAlchemy models for the Doctor Requests module

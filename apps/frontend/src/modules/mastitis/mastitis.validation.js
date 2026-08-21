@@ -1,0 +1,1 @@
+﻿// Form validation rules for the mastitis module

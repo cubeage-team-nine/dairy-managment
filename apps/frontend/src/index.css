@@ -1,0 +1,821 @@
+/* =========================================================
+   SMART DAIRY MANAGER
+   GLOBAL DESIGN SYSTEM
+   ========================================================= */
+
+/* =========================================================
+   GOOGLE FONTS
+   ---------------------------------------------------------
+   Fraunces:
+   - Used for headings
+   - Serif display font
+   - Weight: 500 - 700
+   - Letter spacing: -0.02em
+
+   Plus Jakarta Sans:
+   - Used for body text
+   - Buttons
+   - Forms
+   - Tables
+   - Navigation
+   - UI elements
+   - Weight: 400 - 800
+   ========================================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+
+@import "tailwindcss";
+
+
+/* =========================================================
+   DESIGN TOKENS
+   ========================================================= */
+
+@theme {
+
+  /* =======================================================
+     BRAND COLORS
+     ======================================================= */
+
+  /*
+   * PRIMARY / DEEP PASTURE GREEN
+   * Figma:
+   * oklch(0.44 0.11 148)
+   * Hex: #1F6B3E
+   *
+   * Use for:
+   * - Primary buttons
+   * - Active navigation
+   * - Main CTA
+   * - Links
+   * - Important actions
+   * - Brand elements
+   */
+  --color-primary: oklch(0.44 0.11 148);
+
+  /*
+   * PRIMARY SOFT
+   * Figma:
+   * oklch(0.94 0.04 145)
+   * Hex: #DDF2E2
+   *
+   * Use for:
+   * - Light green backgrounds
+   * - Secondary buttons
+   * - Success backgrounds
+   * - Selected states
+   * - Hover backgrounds
+   */
+  --color-primary-soft: oklch(0.94 0.04 145);
+
+
+  /*
+   * ACCENT / FRESH SPROUT GREEN
+   * Figma:
+   * oklch(0.72 0.17 135)
+   * Hex: #5FBF52
+   *
+   * Use for:
+   * - Accent elements
+   * - Highlights
+   * - Charts
+   * - Positive indicators
+   * - Visual emphasis
+   */
+  --color-accent: oklch(0.72 0.17 135);
+
+
+  /* =======================================================
+     BACKGROUND COLORS
+     ======================================================= */
+
+  /*
+   * BACKGROUND / MILK WHITE
+   * Figma:
+   * oklch(0.99 0.008 110)
+   * Hex: #FDFDF8
+   *
+   * Use for:
+   * - Main application background
+   * - Page background
+   * - Dashboard background
+   */
+  --color-background: oklch(0.99 0.008 110);
+
+
+  /*
+   * CARD / WHITE
+   * Hex: #FFFFFF
+   *
+   * Use for:
+   * - Cards
+   * - Tables
+   * - Modals
+   * - Forms
+   * - Panels
+   */
+  --color-card: #ffffff;
+
+
+  /*
+   * CREAM
+   * Figma:
+   * oklch(0.965 0.026 92)
+   * Hex: #F8F1E2
+   *
+   * Use for:
+   * - Secondary sections
+   * - Highlight areas
+   * - Empty states
+   * - Warm background sections
+   */
+  --color-cream: oklch(0.965 0.026 92);
+
+
+  /*
+   * BARK / EARTHY
+   * Figma:
+   * oklch(0.32 0.045 80)
+   * Hex: #4B3E2A
+   *
+   * Use for:
+   * - Agriculture / earth-related elements
+   * - Secondary headings
+   * - Earth-themed UI
+   * - Supporting visual elements
+   */
+  --color-bark: oklch(0.32 0.045 80);
+
+
+  /* =======================================================
+     TEXT COLORS
+     ======================================================= */
+
+  /*
+   * FOREGROUND / PRIMARY TEXT
+   * Figma:
+   * oklch(0.24 0.03 145)
+   * Hex: #17301F
+   *
+   * Use for:
+   * - Main headings
+   * - Body text
+   * - Important labels
+   * - Table values
+   */
+  --color-foreground: oklch(0.24 0.03 145);
+
+
+  /*
+   * MUTED TEXT
+   * Figma:
+   * oklch(0.5 0.02 145)
+   * Hex: #6E7A70
+   *
+   * Use for:
+   * - Descriptions
+   * - Helper text
+   * - Secondary labels
+   * - Placeholder text
+   * - Metadata
+   */
+  --color-muted-foreground: oklch(0.5 0.02 145);
+
+
+  /* =======================================================
+     BORDER / INPUT
+     ======================================================= */
+
+  /*
+   * BORDER / INPUT
+   * Figma:
+   * oklch(0.9 0.018 130)
+   * Hex: #DEE5DB
+   *
+   * Use for:
+   * - Card borders
+   * - Input borders
+   * - Table borders
+   * - Dividers
+   * - Separators
+   */
+  --color-border: oklch(0.9 0.018 130);
+
+  --color-input: oklch(0.9 0.018 130);
+
+
+  /* =======================================================
+     STATUS COLORS
+     ======================================================= */
+
+  /*
+   * SUCCESS
+   * Hex: #3F9A63
+   *
+   * Use for:
+   * - Success messages
+   * - Successful transactions
+   * - Active status
+   * - Completed status
+   */
+  --color-success: #3f9a63;
+
+
+  /*
+   * DESTRUCTIVE / ERROR
+   * Hex: #D8453A
+   *
+   * Use for:
+   * - Delete buttons
+   * - Error messages
+   * - Failed status
+   * - Destructive actions
+   */
+  --color-destructive: #d8453a;
+
+
+  /* =======================================================
+     HERO GRADIENT
+     ======================================================= */
+
+  /*
+   * HERO GRADIENT
+   *
+   * Start: #14562F
+   * Middle: #24743F
+   * End: #4FA84A
+   *
+   * Use for:
+   * - Homepage hero
+   * - Marketing banners
+   * - Major CTA sections
+   */
+  --background-image-hero-gradient:
+    linear-gradient(
+      135deg,
+      #14562f,
+      #24743f,
+      #4fa84a
+    );
+
+
+  /* =======================================================
+     TYPOGRAPHY
+     ======================================================= */
+
+  /*
+   * HEADING FONT
+   *
+   * Font: Fraunces
+   * Weight: 500 - 700
+   * Letter spacing: -0.02em
+   *
+   * Use for:
+   * - H1
+   * - H2
+   * - H3
+   * - Page headings
+   * - Section headings
+   * - Hero headings
+   */
+  --font-heading: "Fraunces", serif;
+
+
+  /*
+   * BODY / UI FONT
+   *
+   * Font: Plus Jakarta Sans
+   * Weight: 400 - 800
+   *
+   * Use for:
+   * - Paragraphs
+   * - Buttons
+   * - Forms
+   * - Tables
+   * - Navbar
+   * - Sidebar
+   * - Dashboard UI
+   */
+  --font-body: "Plus Jakarta Sans", sans-serif;
+
+
+  /* =======================================================
+     BORDER RADIUS
+     ======================================================= */
+
+  /*
+   * SMALL
+   * 6px
+   *
+   * Use for:
+   * - Small tags
+   * - Small inputs
+   */
+  --radius-sm: 6px;
+
+
+  /*
+   * MEDIUM
+   * 10px
+   *
+   * Use for:
+   * - Buttons
+   * - Inputs
+   * - Dropdowns
+   * - Alerts
+   */
+  --radius-md: 10px;
+
+
+  /*
+   * LARGE
+   * 16px
+   *
+   * Use for:
+   * - Cards
+   * - Modals
+   * - Dashboard panels
+   */
+  --radius-lg: 16px;
+
+
+  /*
+   * EXTRA LARGE
+   * 20px
+   *
+   * Use for:
+   * - Large feature cards
+   * - Hero containers
+   */
+  --radius-xl: 20px;
+
+
+  /*
+   * EXTRA EXTRA LARGE
+   * 24px
+   *
+   * Use for:
+   * - Large marketing sections
+   * - Special containers
+   */
+  --radius-2xl: 24px;
+
+
+  /* =======================================================
+     ELEVATION / SHADOWS
+     ======================================================= */
+
+  /*
+   * SHADOW SM
+   *
+   * Use for:
+   * - Small cards
+   * - Inputs
+   * - Dropdowns
+   */
+  --shadow-sm:
+    0 1px 3px rgba(23, 48, 31, 0.08);
+
+
+  /*
+   * SHADOW MD
+   *
+   * Use for:
+   * - Cards
+   * - Popovers
+   * - Floating elements
+   */
+  --shadow-md:
+    0 4px 12px rgba(23, 48, 31, 0.08);
+
+
+  /*
+   * SHADOW LG
+   *
+   * Use for:
+   * - Modals
+   * - Large floating panels
+   * - Important UI
+   */
+  --shadow-lg:
+    0 10px 30px rgba(23, 48, 31, 0.12);
+}
+
+
+/* =========================================================
+   GLOBAL BASE STYLES
+   ========================================================= */
+
+@layer base {
+
+  /*
+   * GLOBAL BORDER COLOR
+   */
+  * {
+    border-color: var(--color-border);
+  }
+
+
+  /*
+   * HTML
+   */
+  html {
+    scroll-behavior: smooth;
+  }
+
+
+  /*
+   * BODY
+   *
+   * Default:
+   * Background → Milk White
+   * Text → Deep Green
+   * Font → Plus Jakarta Sans
+   */
+  body {
+    margin: 0;
+
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+
+    font-family: var(--font-body);
+
+    font-size: 14px;
+    line-height: 1.6;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+
+  /* =======================================================
+     HEADINGS
+     ======================================================= */
+
+  /*
+   * All headings use Fraunces
+   */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+
+    font-family: var(--font-heading);
+
+    color: var(--color-foreground);
+
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+
+  /*
+   * H1
+   * Fraunces / 36px / 700
+   */
+  h1 {
+    font-size: 36px;
+    font-weight: 700;
+  }
+
+
+  /*
+   * H2
+   * Fraunces / 30px / 700
+   */
+  h2 {
+    font-size: 30px;
+    font-weight: 700;
+  }
+
+
+  /*
+   * H3
+   * Fraunces / 24px / 600
+   */
+  h3 {
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+
+  /*
+   * H4
+   * Fraunces / 20px / 600
+   */
+  h4 {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+
+  /*
+   * H5
+   * Fraunces / 18px / 600
+   */
+  h5 {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+
+  /*
+   * H6
+   * Fraunces / 16px / 600
+   */
+  h6 {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+
+  /* =======================================================
+     PARAGRAPH
+     ======================================================= */
+
+  /*
+   * Default body text uses Plus Jakarta Sans
+   */
+  p {
+    margin: 0;
+    font-family: var(--font-body);
+  }
+
+
+  /* =======================================================
+     FORM ELEMENTS
+     ======================================================= */
+
+  /*
+   * All form controls use Plus Jakarta Sans
+   */
+  input,
+  textarea,
+  select,
+  button {
+    font-family: var(--font-body);
+  }
+
+
+  /*
+   * Buttons
+   */
+  button {
+    cursor: pointer;
+  }
+
+
+  /* =======================================================
+     LINKS
+     ======================================================= */
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+
+/* =========================================================
+   COMMON COMPONENT STYLES
+   ========================================================= */
+
+@layer components {
+
+  /* =======================================================
+     EYEBROW LABEL
+     ======================================================= */
+
+  /*
+   * Figma:
+   * Font: Plus Jakarta Sans
+   * Weight: 600
+   * Size: 12px
+   * Uppercase
+   * Letter spacing: 0.08em
+   *
+   * Example:
+   *
+   * <span className="eyebrow">
+   *   Dairy Management
+   * </span>
+   */
+  .eyebrow {
+    font-family: var(--font-body);
+
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    line-height: 1;
+    text-transform: uppercase;
+
+    letter-spacing: 0.08em;
+  }
+
+
+  /* =======================================================
+     HERO GRADIENT
+     ======================================================= */
+
+  /*
+   * Figma Hero:
+   *
+   * #14562F
+   * #24743F
+   * #4FA84A
+   */
+  .hero-gradient {
+    background-image: linear-gradient(
+      135deg,
+      #14562f,
+      #24743f,
+      #4fa84a
+    );
+  }
+
+
+  /* =======================================================
+     PRIMARY BUTTON
+     ======================================================= */
+
+  /*
+   * Background:
+   * Primary Green #1F6B3E
+   *
+   * Text:
+   * White #FFFFFF
+   *
+   * Font:
+   * Plus Jakarta Sans / 14px / 600
+   */
+  .btn-primary {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: var(--radius-md);
+
+    background-color: var(--color-primary);
+    color: white;
+
+    padding: 10px 20px;
+
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+
+    transition:
+      background-color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+
+  /*
+   * Primary hover:
+   * Dark pasture green
+   */
+  .btn-primary:hover {
+    background-color: #14562f;
+  }
+
+
+  /* =======================================================
+     SECONDARY BUTTON
+     ======================================================= */
+
+  /*
+   * Background:
+   * Primary Soft #DDF2E2
+   *
+   * Text:
+   * Primary #1F6B3E
+   */
+  .btn-secondary {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: var(--radius-md);
+
+    background-color: var(--color-primary-soft);
+    color: var(--color-primary);
+
+    padding: 10px 20px;
+
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+
+    transition: background-color 0.2s ease;
+  }
+
+
+  .btn-secondary:hover {
+    background-color: #cce8d3;
+  }
+
+
+  /* =======================================================
+     OUTLINE BUTTON
+     ======================================================= */
+
+  /*
+   * Border:
+   * Primary Green #1F6B3E
+   *
+   * Background:
+   * White #FFFFFF
+   */
+  .btn-outline {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--color-primary);
+
+    border-radius: var(--radius-md);
+
+    background-color: white;
+    color: var(--color-primary);
+
+    padding: 10px 20px;
+
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+
+  .btn-outline:hover {
+    background-color: var(--color-primary);
+    color: white;
+  }
+
+
+  /* =======================================================
+     DANGER BUTTON
+     ======================================================= */
+
+  /*
+   * Background:
+   * Destructive Red #D8453A
+   *
+   * Text:
+   * White
+   */
+  .btn-danger {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: var(--radius-md);
+
+    background-color: var(--color-destructive);
+    color: white;
+
+    padding: 10px 20px;
+
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+
+  /* =======================================================
+     CARD
+     ======================================================= */
+
+  /*
+   * Background:
+   * Card White #FFFFFF
+   *
+   * Border:
+   * #DEE5DB
+   *
+   * Radius:
+   * 16px
+   *
+   * Shadow:
+   * Small elevation
+   */
+  .card {
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+
+    background-color: var(--color-card);
+
+    box-shadow: var(--shadow-sm);
+  }
+}

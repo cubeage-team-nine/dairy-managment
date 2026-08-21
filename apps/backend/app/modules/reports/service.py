@@ -1,0 +1,1 @@
+﻿# Business logic for the Reports module (derived/aggregated data, no own table)

@@ -1,0 +1,1 @@
+﻿# SQLAlchemy models for the Farms module

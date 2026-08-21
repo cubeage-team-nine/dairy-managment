@@ -1,0 +1,1 @@
+﻿# Shared FastAPI dependencies (e.g. current user, db session)

@@ -1,0 +1,1 @@
+﻿# Business logic for the Dmi module (derived/aggregated data, no own table)

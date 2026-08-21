@@ -1,0 +1,1 @@
+﻿// Custom hooks wrapping animals.service.js
