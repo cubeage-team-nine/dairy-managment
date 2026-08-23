@@ -1,0 +1,32 @@
+name: Auto Merge to Development
+
+on:
+  push:
+    branches:
+      - 'dev-*'
+
+jobs:
+  merge-to-dev:
+    name: Merge developer branch to development
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch development branch
+        run: git fetch origin development:development
+
+      - name: Merge into development
+        run: |
+          git checkout development
+          git merge ${{ github.ref_name }} --no-edit
+
+      - name: Push development branch
+        run: git push origin development
