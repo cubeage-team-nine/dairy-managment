@@ -5,6 +5,9 @@ on:
     branches:
       - 'dev-*'
 
+permissions:
+  contents: write
+
 jobs:
   merge-to-dev:
     name: Merge developer branch to development
@@ -20,13 +23,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Fetch development branch
-        run: git fetch origin development:development
-
       - name: Merge into development
         run: |
-          git checkout development
-          git merge ${{ github.ref_name }} --no-edit
-
-      - name: Push development branch
-        run: git push origin development
+          # Fetch the latest development branch and check it out
+          git fetch origin development
+          git checkout -B development origin/development
+          
+          # Merge the pushed branch into development
+          git merge origin/${{ github.ref_name }} --no-edit
+          
+          # Push the changes back to origin
+          git push origin development
