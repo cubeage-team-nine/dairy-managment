@@ -1,17 +1,17 @@
-import Benefits from "../components/about/Benefits"
-import Hero from "../components/about/Hero"
-import VisionMision from "../components/about/VisionMision"
-import WhyUs from "../components/about/WhyUs"
+import Hero from "../components/about/Hero.jsx";
+import VisionMision from "../components/about/VisionMision.jsx";
+import Benefits from "../components/about/Benefits.jsx";
+import WhyUs from "../components/about/WhyUs.jsx";
 
 function AboutPage() {
   return (
     <>
-    <Hero/>
-    <VisionMision/>
-    <WhyUs/>
-    <Benefits/>
+      <Hero />
+      <VisionMision />
+      <Benefits />
+      <WhyUs />
     </>
-  )
+  );
 }
 
-export default AboutPage
+export default AboutPage;

@@ -3,6 +3,7 @@ import { Phone, Mail, MapPin } from "lucide-react";
 import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube } from "react-icons/fa";
 
 import RoutePath from "../../core/constants/routes.constant";
+import Logo from "./Logo.jsx";
 
 const quickLinks = [
   {
@@ -94,7 +95,7 @@ export function Footer() {
             >
               {/* Logo */}
               <div className="flex size-12 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15">
-                {/* <Logo onDark /> */}
+                <Logo onDark iconOnly />
               </div>
 
               <div>

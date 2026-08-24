@@ -1,0 +1,149 @@
+.vision-mission {
+          width: 100%;
+          background: #fbfbf3;
+          padding: 76px 24px 110px;
+          box-sizing: border-box;
+        }
+
+        .vm-container {
+          width: min(1296px, 100%);
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 25px;
+        }
+
+        .vm-card {
+          min-height: 315px;
+          box-sizing: border-box;
+          border-radius: 24px;
+          padding: 42px;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+        }
+
+        .vm-mission {
+          background: #ffffff;
+          border: 1px solid #e2e5dc;
+          box-shadow: 0 13px 35px rgba(29, 53, 34, 0.07);
+        }
+
+        .vm-vision {
+          color: #ffffff;
+          background: linear-gradient(135deg, #075b2a 0%, #3e9c3b 100%);
+          box-shadow: 0 15px 35px rgba(24, 101, 48, 0.14);
+        }
+
+        .vm-icon {
+          width: 51px;
+          height: 51px;
+          border-radius: 15px;
+          background: #dff3df;
+          color: #397c4b;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 26px;
+        }
+
+        .vm-icon svg {
+          width: 25px;
+          height: 25px;
+        }
+
+        .vision-icon {
+          background: rgba(255,255,255,0.13);
+          color: #ffffff;
+        }
+
+        .vm-card h2 {
+          margin: 0 0 15px;
+          font-family: "DM Serif Display", Georgia, serif;
+          font-size: 30px;
+          font-weight: 400;
+          line-height: 1.1;
+          letter-spacing: -0.5px;
+        }
+
+        .vm-card p {
+          margin: 0;
+          max-width: 580px;
+          font-family: "DM Sans", sans-serif;
+          font-size: 16px;
+          line-height: 1.65;
+          color: #686d66;
+        }
+
+        .vm-vision p {
+          color: rgba(255,255,255,0.86);
+        }
+
+        @media (max-width: 900px) {
+          .vision-mission {
+            padding: 60px 24px 80px;
+          }
+
+          .vm-container {
+            gap: 20px;
+          }
+
+          .vm-card {
+            min-height: 320px;
+            padding: 32px;
+          }
+
+          .vm-card h2 {
+            font-size: 28px;
+          }
+
+          .vm-card p {
+            font-size: 15px;
+          }
+        }
+
+        @media (max-width: 700px) {
+          .vision-mission {
+            padding: 45px 20px 65px;
+          }
+
+          .vm-container {
+            grid-template-columns: 1fr;
+          }
+
+          .vm-card {
+            min-height: auto;
+            padding: 30px;
+            border-radius: 20px;
+          }
+
+          .vm-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 22px;
+          }
+
+          .vm-card h2 {
+            font-size: 28px;
+          }
+
+          .vm-card p {
+            font-size: 14px;
+            line-height: 1.65;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .vision-mission {
+            padding-left: 16px;
+            padding-right: 16px;
+          }
+
+          .vm-card {
+            padding: 25px;
+          }
+
+          .vm-card h2 {
+            font-size: 26px;
+          }
+        }

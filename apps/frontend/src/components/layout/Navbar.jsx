@@ -5,7 +5,7 @@ import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
 import RoutePath from "../../core/constants/routes.constant.js";
-// import { Logo } from "@/components/Logo";
+import Logo from "./Logo.jsx";
 
 const navLinks = [
   {
@@ -34,13 +34,13 @@ export default function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
         {/* Logo */}
-        {/* <Link
+        <Link
           to={RoutePath.HOME}
           className="flex items-center"
           onClick={() => setIsMenuOpen(false)}
         >
           <Logo />
-        </Link> */}
+        </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-8 md:flex">
