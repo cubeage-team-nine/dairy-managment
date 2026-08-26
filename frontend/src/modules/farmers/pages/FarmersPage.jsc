@@ -1,0 +1,2 @@
+import FarmersPage from './FarmersPage.jsx';
+export default FarmersPage;
