@@ -39,6 +39,7 @@ import MastitisRecordsPage from "../modules/mastitis/pages/MastitisRecordsPage.j
 import FinanceManagementPage from "../modules/finance/pages/FinanceManagementPage.jsx";
 import ReportsPage from "../modules/reports/pages/ReportsPage.jsx";
 import MarketplacePage from "../modules/marketplace/pages/MarketplacePage.jsx";
+import DoctorPortalLayout from "../layouts/DoctorPortalLayout.jsx";
 import RequestsPage from "../modules/doctor-requests/pages/RequestsPage.jsx";
 
 const AppRoutes = () => {
@@ -54,6 +55,29 @@ const AppRoutes = () => {
         <Route path={RoutePath.LOGIN} element={<LoginPage />} />
         <Route path={RoutePath.SIGNUP} element={<SignupPage />} />
         <Route path={RoutePath.FEATURES} element={<Features />} />
+      </Route>
+
+      {/* ================= DOCTOR PORTAL ================= */}
+
+      <Route element={<DoctorPortalLayout />}>
+        <Route
+          path={RoutePath.DOCTOR_DASHBOARD}
+          element={<DoctorDashboardPage />}
+        />
+        <Route path={RoutePath.DOCTOR_REQUESTS} element={<RequestsPage />} />
+        <Route
+          path={RoutePath.DOCTOR_ASSIGNED_ANIMALS}
+          element={<AnimalsPage />}
+        />
+        <Route
+          path={RoutePath.DOCTOR_HEALTH_RECORDS}
+          element={<HealthRecordsPage />}
+        />
+        <Route
+          path={RoutePath.DOCTOR_MASTITIS_CASES}
+          element={<MastitisRecordsPage />}
+        />
+        <Route path={RoutePath.DOCTOR_PROFILE} element={<DoctorProfilePage />} />
       </Route>
 
       {/* ================= DASHBOARD LAYOUT (authenticated) ================= */}
@@ -134,35 +158,6 @@ const AppRoutes = () => {
             <Route path={RoutePath.FARMER_SETTINGS} element={<SettingsPage />} />
           </Route>
 
-          {/* ================= DOCTOR ================= */}
-
-          <Route
-            // element={
-            //   <ProtectedRoute
-            //     allowedRoles={[USER_ROLES.DOCTOR]}
-            //   />
-            // }
-          >
-            <Route
-              path={RoutePath.DOCTOR_DASHBOARD}
-              element={<DoctorDashboardPage />}
-            />
-            <Route path={RoutePath.DOCTOR_REQUESTS} element={<RequestsPage />} />
-            <Route
-              path={RoutePath.DOCTOR_ASSIGNED_ANIMALS}
-              element={<AnimalsPage />}
-            />
-            <Route
-              path={RoutePath.DOCTOR_HEALTH_RECORDS}
-              element={<HealthRecordsPage />}
-            />
-            <Route
-              path={RoutePath.DOCTOR_MASTITIS_CASES}
-              element={<MastitisRecordsPage />}
-            />
-            <Route path={RoutePath.DOCTOR_PROFILE} element={<DoctorProfilePage />} />
-          </Route>
-
         </Route>
 
     </Routes>
@@ -170,3 +165,4 @@ const AppRoutes = () => {
 };
 
 export default AppRoutes;
+
