@@ -23,7 +23,7 @@ import { USER_ROLES } from "../../core/constants/app.constants";
 import RoutePath from "../../core/constants/routes.constant";
 
 export const sidebarMenus = {
-  [USER_ROLES.SUPER_ADMIN]: [
+  [USER_ROLES.ADMIN]: [
     {
       label: "Dashboard",
       icon: LayoutDashboard,

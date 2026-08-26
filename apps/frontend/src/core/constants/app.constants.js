@@ -1,11 +1,11 @@
 export const USER_ROLES = {
-  SUPER_ADMIN: 'SUPER_ADMIN',
+  ADMIN: 'ADMIN',
   FARMER: 'FARMER',
   DOCTOR: 'DOCTOR',
 };
 
 export const ROLE_LABELS = {
-  [USER_ROLES.SUPER_ADMIN]: 'Super Admin',
+  [USER_ROLES.ADMIN]: 'Admin',
   [USER_ROLES.FARMER]: 'Farmer',
   [USER_ROLES.DOCTOR]: 'Doctor',
 };

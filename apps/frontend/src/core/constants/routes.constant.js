@@ -3,7 +3,7 @@ import { USER_ROLES } from './app.constants';
 
 class RoutePath {
   // ==================== BASE ROUTES ====================
-  static SUPER_ADMIN_BASE = "/admin";
+  static ADMIN_BASE = "/admin";
   static FARMER_BASE = "/farmer";
   static DOCTOR_BASE = "/doctor";
 
@@ -20,12 +20,12 @@ class RoutePath {
   // SUPER ADMIN
   // ======================================================
 
-  static ADMIN_DASHBOARD = `${this.SUPER_ADMIN_BASE}/dashboard`;
-  static ADMIN_FARMERS = `${this.SUPER_ADMIN_BASE}/farmers`;
-  static ADMIN_DOCTORS = `${this.SUPER_ADMIN_BASE}/doctors`;
-  static ADMIN_FARMS = `${this.SUPER_ADMIN_BASE}/farms`;
-  static ADMIN_MILK_CENTERS = `${this.SUPER_ADMIN_BASE}/milk-centers`;
-  static ADMIN_SETTINGS = `${this.SUPER_ADMIN_BASE}/settings`;
+  static ADMIN_DASHBOARD = `${this.ADMIN_BASE}/dashboard`;
+  static ADMIN_FARMERS = `${this.ADMIN_BASE}/farmers`;
+  static ADMIN_DOCTORS = `${this.ADMIN_BASE}/doctors`;
+  static ADMIN_FARMS = `${this.ADMIN_BASE}/farms`;
+  static ADMIN_MILK_CENTERS = `${this.ADMIN_BASE}/milk-centers`;
+  static ADMIN_SETTINGS = `${this.ADMIN_BASE}/settings`;
 
   // ======================================================
   // FARMER
@@ -61,19 +61,21 @@ class RoutePath {
   // COMMON
   // ======================================================
 
+  static PROFILE = "/profile";
+
   static UNAUTHORIZED = "/unauthorized";
 
   static NOT_FOUND = "*";
 }
 
 export const ROLE_HOME_ROUTE = {
-  [USER_ROLES.SUPER_ADMIN]: RoutePath.ADMIN_DASHBOARD,
+  [USER_ROLES.ADMIN]: RoutePath.ADMIN_DASHBOARD,
   [USER_ROLES.FARMER]: RoutePath.FARMER_DASHBOARD,
   [USER_ROLES.DOCTOR]: RoutePath.DOCTOR_DASHBOARD,
 };
 
 export const ROLE_SETTINGS_ROUTE = {
-  [USER_ROLES.SUPER_ADMIN]: RoutePath.ADMIN_SETTINGS,
+  [USER_ROLES.ADMIN]: RoutePath.ADMIN_SETTINGS,
   [USER_ROLES.FARMER]: RoutePath.FARMER_SETTINGS,
   [USER_ROLES.DOCTOR]: RoutePath.DOCTOR_SETTINGS,
 };

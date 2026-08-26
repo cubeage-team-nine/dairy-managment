@@ -1,4 +1,5 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Mail } from 'lucide-react'
 import { useAuth } from '../../../core/hooks/useAuth.js'
 import { USER_ROLES, ROLE_LABELS } from '../../../core/constants/app.constants.js'
@@ -6,22 +7,45 @@ import RoutePath, { ROLE_HOME_ROUTE } from '../../../core/constants/routes.const
 import Logo from '../../../components/layout/Logo.jsx'
 import FormInput from '../../../components/forms/FormInput.jsx'
 import PasswordInput from '../../../components/forms/PasswordInput.jsx'
+import ErrorMessage from '../../../components/common/ErrorMessage.jsx'
 import AuthMarketingPanel from '../components/AuthMarketingPanel.jsx'
+import { login as loginRequest } from '../auth.service.js'
 
-const DEV_ROLES = [USER_ROLES.SUPER_ADMIN, USER_ROLES.FARMER, USER_ROLES.DOCTOR]
+const DEV_ROLES = [USER_ROLES.ADMIN, USER_ROLES.FARMER, USER_ROLES.DOCTOR]
 
 function LoginPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const signupSuccess = location.state?.signupSuccess
 
   const handleDevLogin = (role) => {
     login({ id: 'dev-user', name: `Dev ${ROLE_LABELS[role]}`, role }, 'dev-token')
     navigate(ROLE_HOME_ROUTE[role])
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    // Real authentication can be added here later.
+    setError('')
+
+    const formData = new FormData(event.target)
+    const payload = {
+      email: formData.get('email'),
+      password: formData.get('password'),
+    }
+
+    setIsSubmitting(true)
+    try {
+      const { data } = await loginRequest(payload)
+      login(data.user, data.access_token)
+      navigate(ROLE_HOME_ROUTE[data.user.role] ?? RoutePath.HOME)
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Login failed. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -47,6 +71,18 @@ function LoginPage() {
               </p>
             </div>
 
+            {signupSuccess && !error && (
+              <div className="mb-5 rounded-lg border border-success/30 bg-success/5 px-4 py-3 text-sm text-success">
+                Account created successfully. Please log in.
+              </div>
+            )}
+
+            {error && (
+              <div className="mb-5">
+                <ErrorMessage message={error} />
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-5">
               <FormInput
                 id="email"
@@ -56,6 +92,8 @@ function LoginPage() {
                 icon={Mail}
                 autoComplete="email"
                 placeholder="jane@greenvalley.com"
+                defaultValue={location.state?.email ?? ''}
+                required
               />
 
               <PasswordInput
@@ -64,6 +102,7 @@ function LoginPage() {
                 label="Password"
                 autoComplete="current-password"
                 placeholder="••••••••"
+                required
                 labelExtra={
                   <button
                     type="button"
@@ -81,9 +120,10 @@ function LoginPage() {
 
               <button
                 type="submit"
-                className="flex h-12 w-full items-center justify-center rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                disabled={isSubmitting}
+                className="flex h-12 w-full items-center justify-center rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Login
+                {isSubmitting ? 'Logging in...' : 'Login'}
               </button>
             </form>
 

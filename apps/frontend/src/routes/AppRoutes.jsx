@@ -40,6 +40,7 @@ import FinanceManagementPage from "../modules/finance/pages/FinanceManagementPag
 import ReportsPage from "../modules/reports/pages/ReportsPage.jsx";
 import MarketplacePage from "../modules/marketplace/pages/MarketplacePage.jsx";
 import RequestsPage from "../modules/doctor-requests/pages/RequestsPage.jsx";
+import ProfilePage from "../modules/profile/pages/ProfilePage.jsx";
 
 const AppRoutes = () => {
   return (
@@ -60,15 +61,15 @@ const AppRoutes = () => {
 
         <Route element={<DashboardLayout />}>
 
-          {/* ================= SUPER ADMIN ================= */}
+          {/* ============ COMMON (any authenticated role) ============ */}
 
-          <Route
-          //   element={
-          //   <ProtectedRoute
-          //     allowedRoles={[USER_ROLES.SUPER_ADMIN]}
-          //   />
-          // }
-          >
+          <Route element={<ProtectedRoute />}>
+            <Route path={RoutePath.PROFILE} element={<ProfilePage />} />
+          </Route>
+
+          {/* ================= ADMIN ================= */}
+
+          <Route element={<RoleRoute allowedRoles={[USER_ROLES.ADMIN]} />}>
             <Route
               path={RoutePath.ADMIN_DASHBOARD}
               element={<DashboardPage />}
@@ -85,13 +86,7 @@ const AppRoutes = () => {
 
           {/* ================= FARMER ================= */}
 
-          <Route
-            // element={
-            //   <ProtectedRoute
-            //     allowedRoles={[USER_ROLES.FARMER]}
-            //   />
-            // }
-          >
+          <Route element={<RoleRoute allowedRoles={[USER_ROLES.FARMER]} />}>
             <Route
               path={RoutePath.FARMER_DASHBOARD}
               element={<FarmerDashboardPage />}
@@ -136,13 +131,7 @@ const AppRoutes = () => {
 
           {/* ================= DOCTOR ================= */}
 
-          <Route
-            // element={
-            //   <ProtectedRoute
-            //     allowedRoles={[USER_ROLES.DOCTOR]}
-            //   />
-            // }
-          >
+          <Route element={<RoleRoute allowedRoles={[USER_ROLES.DOCTOR]} />}>
             <Route
               path={RoutePath.DOCTOR_DASHBOARD}
               element={<DoctorDashboardPage />}

@@ -1,8 +1,74 @@
-﻿__pycache__/
+﻿# =========================
+# Python
+# =========================
+__pycache__/
 *.py[cod]
+*.pyo
+*.pyd
+
+# =========================
+# Virtual Environment
+# =========================
 venv/
 .venv/
+env/
+ENV/
+
+# =========================
+# Packaging
+# =========================
 *.egg-info/
-.pytest_cache/
-.mypy_cache/
+dist/
+build/
+.eggs/
+pip-wheel-metadata/
+
+# =========================
+# Environment / Secrets
+# =========================
 .env
+.env.*
+!.env.example
+
+# =========================
+# Testing
+# =========================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# =========================
+# Type Checking / Linters
+# =========================
+.mypy_cache/
+.ruff_cache/
+
+# =========================
+# IDE / Editors
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Database / Local Files
+# =========================
+*.sqlite
+*.sqlite3
+*.db
+
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/

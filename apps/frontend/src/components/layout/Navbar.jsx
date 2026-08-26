@@ -4,8 +4,10 @@ import { Link, NavLink } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
-import RoutePath from "../../core/constants/routes.constant.js";
+import RoutePath, { ROLE_HOME_ROUTE } from "../../core/constants/routes.constant.js";
+import { useAuth } from "../../core/hooks/useAuth.js";
 import Logo from "./Logo.jsx";
+import UserAvatarDropdown from "./UserAvatarDropdown.jsx";
 
 const navLinks = [
   {
@@ -28,6 +30,25 @@ const navLinks = [
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, user } = useAuth();
+
+  // Same navbar shell for every logged-in role — only the destination behind the
+  // logo and the avatar's contents change based on who's authenticated.
+  if (isAuthenticated) {
+    const homePath = user ? ROLE_HOME_ROUTE[user.role] ?? RoutePath.HOME : RoutePath.HOME;
+
+    return (
+      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link to={homePath} className="flex items-center">
+            <Logo />
+          </Link>
+
+          <UserAvatarDropdown />
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
