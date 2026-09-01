@@ -11,7 +11,7 @@ export const useFarmers = () => {
     setError(null)
     try {
       const response = await getFarmers()
-      setFarmers(response.data)
+      setFarmers(response.data.items)
     } catch (err) {
       setError(err.message || 'Failed to load farmers.')
     } finally {

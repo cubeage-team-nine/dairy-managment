@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import PersonalInfoSection from '../components/PersonalInfoSection.jsx'
+import ChangePasswordSection from '../components/ChangePasswordSection.jsx'
 import NotificationsList from '../components/NotificationsList.jsx'
 import { useNotifications } from '../profile.hooks.js'
 
 const TABS = [
   { key: 'info', label: 'Personal Info' },
+  { key: 'security', label: 'Security' },
   { key: 'notifications', label: 'Notifications' },
 ]
 
@@ -47,9 +49,9 @@ function ProfilePage() {
         ))}
       </div>
 
-      {activeTab === 'info' ? (
-        <PersonalInfoSection />
-      ) : (
+      {activeTab === 'info' && <PersonalInfoSection />}
+      {activeTab === 'security' && <ChangePasswordSection />}
+      {activeTab === 'notifications' && (
         <NotificationsList notifications={notifications} onMarkAsRead={markAsRead} />
       )}
     </div>

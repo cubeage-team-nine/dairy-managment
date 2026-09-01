@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../../core/hooks/useAuth.js'
-import { updateProfile } from '../auth/auth.service.js'
+import { updateProfile, changePassword } from '../auth/auth.service.js'
 
 export function useProfileForm() {
   const { user, updateUser } = useAuth()
@@ -23,6 +23,28 @@ export function useProfileForm() {
   }
 
   return { user, isEditing, setIsEditing, isSaving, error, save }
+}
+
+export function useChangePassword() {
+  const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
+
+  const save = async (payload) => {
+    setIsSaving(true)
+    setError('')
+    setSuccess(false)
+    try {
+      await changePassword(payload)
+      setSuccess(true)
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to change password.')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  return { isSaving, error, success, save }
 }
 
 // Notifications have no backend module yet — this mock data stands in for it.

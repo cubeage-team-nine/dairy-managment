@@ -6,6 +6,7 @@ from app.core.constants import AccountStatus, UserRole
 from app.core.exceptions import ConflictError, ForbiddenError, UnauthorizedError
 from app.core.security import create_access_token, hash_password, verify_password
 from app.modules.auth.schema import (
+    ChangePasswordRequest,
     DoctorSignupRequest,
     FarmerSignupRequest,
     LoginRequest,
@@ -115,6 +116,14 @@ def update_profile(db: Session, user: User, data: UpdateProfileRequest) -> UserR
 
     db.refresh(user)
     return UserResponse.model_validate(user)
+
+
+def change_password(db: Session, user: User, data: ChangePasswordRequest) -> None:
+    if not verify_password(data.current_password, user.password_hash):
+        raise UnauthorizedError("Current password is incorrect.")
+
+    user.password_hash = hash_password(data.new_password)
+    db.commit()
 
 
 def login(db: Session, data: LoginRequest) -> TokenResponse:

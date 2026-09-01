@@ -4,12 +4,14 @@ from sqlalchemy.orm import Session
 from app.common.dependencies import get_db
 from app.modules.auth.dependencies import get_current_user
 from app.modules.auth.schema import (
+    ChangePasswordRequest,
     LoginRequest,
     SignupRequest,
     TokenResponse,
     UpdateProfileRequest,
     UserResponse,
 )
+from app.modules.auth.service import change_password as change_password_service
 from app.modules.auth.service import login as login_service
 from app.modules.auth.service import signup as signup_service
 from app.modules.auth.service import update_profile as update_profile_service
@@ -40,6 +42,15 @@ def update_me(
     db: Session = Depends(get_db),
 ) -> UserResponse:
     return update_profile_service(db, current_user, payload)
+
+
+@router.post("/change-password", status_code=204)
+def change_password(
+    payload: ChangePasswordRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> None:
+    change_password_service(db, current_user, payload)
 
 
 @router.post("/logout")

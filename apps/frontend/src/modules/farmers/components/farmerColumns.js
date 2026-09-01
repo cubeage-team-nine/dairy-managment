@@ -1,7 +1,7 @@
 export const farmerColumns = [
-  { key: 'name', label: 'Name' },
-  { key: 'phone', label: 'Phone' },
+  { key: 'full_name', label: 'Name' },
+  { key: 'mobile_number', label: 'Phone' },
   { key: 'village', label: 'Village' },
-  { key: 'animalsCount', label: 'Animals' },
+  { key: 'animals_count', label: 'Animals' },
   { key: 'status', label: 'Status' },
 ]
