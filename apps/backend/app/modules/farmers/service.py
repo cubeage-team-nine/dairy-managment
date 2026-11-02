@@ -37,3 +37,5 @@ def get_farmer(db: Session, farmer_id: uuid.UUID) -> FarmerListItem:
 
     farmer_profile, user, animals_count = row
     return _to_list_item(farmer_profile, user, animals_count)
+
+

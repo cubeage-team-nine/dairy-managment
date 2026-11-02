@@ -18,7 +18,7 @@ import LoginPage from "../modules/auth/pages/LoginPage.jsx";
 import SignupPage from "../modules/auth/pages/SignupPage.jsx";
 
 
-import DashboardPage from "../modules/dashboard/pages/DashboardPage.jsx";
+import AdminDashboardPage from "../modules/dashboard/pages/AdminDashboardPage.jsx";
 import FarmerDashboardPage from "../modules/dashboard/pages/FarmerDashboardPage.jsx";
 import DoctorDashboardPage from "../modules/dashboard/pages/DoctorDashboardPage.jsx";
 import SettingsPage from "../modules/dashboard/pages/SettingsPage.jsx";
@@ -40,6 +40,9 @@ import FinanceManagementPage from "../modules/finance/pages/FinanceManagementPag
 import ReportsPage from "../modules/reports/pages/ReportsPage.jsx";
 import MarketplacePage from "../modules/marketplace/pages/MarketplacePage.jsx";
 import RequestsPage from "../modules/doctor-requests/pages/RequestsPage.jsx";
+import HealthRequestsPage from "../modules/doctor-requests/pages/HealthRequestsPage.jsx";
+import DoctorHealthRecordsPage from "../modules/doctors/pages/DoctorHealthRecordsPage.jsx";
+import FarmerDoctorsPage from "../modules/farmers/pages/FarmerDoctorsPage.jsx";
 import ProfilePage from "../modules/profile/pages/ProfilePage.jsx";
 
 const AppRoutes = () => {
@@ -72,7 +75,7 @@ const AppRoutes = () => {
           <Route element={<RoleRoute allowedRoles={[USER_ROLES.ADMIN]} />}>
             <Route
               path={RoutePath.ADMIN_DASHBOARD}
-              element={<DashboardPage />}
+              element={<AdminDashboardPage />}
             />
             <Route path={RoutePath.ADMIN_FARMERS} element={<FarmersPage />} />
             <Route path={RoutePath.ADMIN_DOCTORS} element={<DoctorsPage />} />
@@ -118,6 +121,10 @@ const AppRoutes = () => {
               element={<MastitisRecordsPage />}
             />
             <Route
+              path={RoutePath.FARMER_DOCTORS}
+              element={<FarmerDoctorsPage />}
+            />
+            <Route
               path={RoutePath.FARMER_FINANCE_MANAGEMENT}
               element={<FinanceManagementPage />}
             />
@@ -137,13 +144,14 @@ const AppRoutes = () => {
               element={<DoctorDashboardPage />}
             />
             <Route path={RoutePath.DOCTOR_REQUESTS} element={<RequestsPage />} />
+            <Route path={RoutePath.DOCTOR_HEALTH_REQUESTS} element={<HealthRequestsPage />} />
             <Route
               path={RoutePath.DOCTOR_ASSIGNED_ANIMALS}
               element={<AnimalsPage />}
             />
             <Route
               path={RoutePath.DOCTOR_HEALTH_RECORDS}
-              element={<HealthRecordsPage />}
+              element={<DoctorHealthRecordsPage />}
             />
             <Route
               path={RoutePath.DOCTOR_MASTITIS_CASES}

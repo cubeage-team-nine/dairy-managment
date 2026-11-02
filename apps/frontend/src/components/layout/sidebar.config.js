@@ -117,6 +117,12 @@ export const sidebarMenus = {
     },
 
     {
+      label: "Doctors",
+      icon: Stethoscope,
+      path: RoutePath.FARMER_DOCTORS,
+    },
+
+    {
       label: "Finance Management",
       icon: Wallet,
       path: RoutePath.FARMER_FINANCE_MANAGEMENT,
@@ -152,6 +158,12 @@ export const sidebarMenus = {
       label: "Requests",
       icon: Inbox,
       path: RoutePath.DOCTOR_REQUESTS,
+    },
+
+    {
+      label: "Health Requests",
+      icon: HeartPulse,
+      path: RoutePath.DOCTOR_HEALTH_REQUESTS,
     },
 
     {

@@ -40,6 +40,7 @@ class RoutePath {
   static FARMER_HEALTH_RECORDS = `${this.FARMER_BASE}/health-records`;
   static FARMER_BREEDING_RECORDS = `${this.FARMER_BASE}/breeding-records`;
   static FARMER_MASTITIS_RECORDS = `${this.FARMER_BASE}/mastitis-records`;
+  static FARMER_DOCTORS = `${this.FARMER_BASE}/doctors`;
   static FARMER_FINANCE_MANAGEMENT = `${this.FARMER_BASE}/finance-management`;
   static FARMER_REPORTS = `${this.FARMER_BASE}/reports`;
   static FARMER_MARKETPLACE = `${this.FARMER_BASE}/marketplace`;
@@ -51,6 +52,7 @@ class RoutePath {
 
   static DOCTOR_DASHBOARD = `${this.DOCTOR_BASE}/dashboard`;
   static DOCTOR_REQUESTS = `${this.DOCTOR_BASE}/requests`;
+  static DOCTOR_HEALTH_REQUESTS = `${this.DOCTOR_BASE}/health-requests`;
   static DOCTOR_ASSIGNED_ANIMALS = `${this.DOCTOR_BASE}/assigned-animals`;
   static DOCTOR_HEALTH_RECORDS = `${this.DOCTOR_BASE}/health-records`;
   static DOCTOR_MASTITIS_CASES = `${this.DOCTOR_BASE}/mastitis-cases`;

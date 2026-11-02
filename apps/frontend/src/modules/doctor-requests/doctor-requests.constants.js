@@ -581,3 +581,160 @@ export const NOTIFICATIONS_DATA = [
     type: 'schedule',
   },
 ];
+
+// ── Doctor Dashboard sample data ─────────────────────────────────────────
+
+export const ASSIGNED_ANIMALS = [
+  { id:1, tag:'#COW-4029', breed:'HF',      farm:'Surya Farms',    issue:'High fever, milk drop',           status:'Critical'   },
+  { id:2, tag:'#COW-1082', breed:'Jersey',  farm:'Balaji Dairy',   issue:'Mastitis – left rear',            status:'Under Care' },
+  { id:3, tag:'#COW-2041', breed:'Gir',     farm:'Ganga Bovines',  issue:'Pregnancy check',                 status:'Scheduled'  },
+  { id:4, tag:'#COW-3105', breed:'Murrah',  farm:'GreenPastures',  issue:'Rumen bloat',                     status:'Critical'   },
+  { id:5, tag:'#COW-8812', breed:'HF',      farm:'Panchamrit',     issue:'Sole ulcer, digital dermatitis',  status:'Monitoring' },
+  { id:6, tag:'#COW-6019', breed:'Mehsana', farm:'Banas Cattle',   issue:'Uterine prolapse (post-op)',      status:'Recovery'   },
+]
+
+export const TODAY_APPOINTMENTS = [
+  { id:1, time:'09:00 AM', farm:'Surya Farms',       animal:'COW-4029 (HF)',     purpose:'Emergency fever follow-up',      done:true  },
+  { id:2, time:'11:30 AM', farm:'Balaji Dairy',      animal:'COW-1082 (Jersey)', purpose:'Mastitis re-check',              done:true  },
+  { id:3, time:'02:00 PM', farm:'Ganga Bovines',     animal:'COW-2041 (Gir)',    purpose:'Pregnancy ultrasound',           done:false },
+  { id:4, time:'04:00 PM', farm:'GreenPastures',     animal:'COW-3105 (Murrah)', purpose:'Bloat treatment review',         done:false },
+  { id:5, time:'05:30 PM', farm:'Kisan Dairy Co-op', animal:'COW-1980 (Sahiwal)',purpose:'Hoof infection bandage change',  done:false },
+]
+
+export const ANIMAL_STATUS_STYLE = {
+  Critical:     'bg-red-50    text-red-600    border-red-200',
+  'Under Care': 'bg-orange-50 text-orange-600 border-orange-200',
+  Scheduled:    'bg-blue-50   text-blue-600   border-blue-200',
+  Monitoring:   'bg-purple-50 text-purple-600 border-purple-200',
+  Recovery:     'bg-green-50  text-green-700  border-green-200',
+}
+
+// ── Health Requests Page ──────────────────────────────────────────────────
+
+export const HR_STATUS = {
+  PENDING:   'Pending',
+  ACCEPTED:  'Accepted',
+  REJECTED:  'Rejected',
+  COMPLETED: 'Completed',
+}
+
+export const HR_PRIORITY = {
+  NORMAL:    'Normal',
+  HIGH:      'High',
+  EMERGENCY: 'Emergency',
+}
+
+export const HR_STATUS_STYLE = {
+  Pending:   'bg-orange-50 text-orange-600 border-orange-200',
+  Accepted:  'bg-blue-50   text-blue-700   border-blue-200',
+  Rejected:  'bg-red-50    text-red-600    border-red-200',
+  Completed: 'bg-green-50  text-green-700  border-green-200',
+}
+
+export const HR_PRIORITY_STYLE = {
+  Normal:    'bg-gray-100  text-gray-600   border-gray-200',
+  High:      'bg-orange-50 text-orange-600 border-orange-200',
+  Emergency: 'bg-red-50    text-red-600    border-red-200',
+}
+
+// Sample health requests with full structured location data.
+// Replace with API response once backend /doctor/health-requests is ready.
+export const HEALTH_REQUESTS = [
+  {
+    id: 'HR-1001',
+    date: '2026-10-28',
+    animal: { name: 'Lakshmi', tag: '#COW-4029', type: 'Cow', breed: 'Holstein Friesian', age: '4.5 Yrs', gender: 'Female', image: '' },
+    farmer: {
+      name: 'Rahul Patil', mobile: '9876543210', email: 'rahul@farm.in', farm: 'Surya Farms',
+      location: { village: 'Shirur', taluka: 'Shirur', district: 'Pune', state: 'Maharashtra', pincode: '412210', address: 'Main Road, Near Bus Stand, Shirur' },
+    },
+    issue: 'High fever & sudden milk drop',
+    symptoms: 'Body temp 104.2°F, decreased rumination, 40% drop in morning milk yield, nasal discharge.',
+    duration: '2 days', prevTreatment: 'None', notes: 'Immediate visit requested.', priority: 'Emergency', status: 'Pending',
+  },
+  {
+    id: 'HR-1002',
+    date: '2026-10-27',
+    animal: { name: 'Gauri', tag: '#COW-1082', type: 'Cow', breed: 'Jersey', age: '3 Yrs', gender: 'Female', image: '' },
+    farmer: {
+      name: 'Krishna Murthy', mobile: '9823456789', email: '', farm: 'Balaji Dairy',
+      location: { village: 'Talegaon', taluka: 'Maval', district: 'Pune', state: 'Maharashtra', pincode: '410507', address: 'Plot 12, Kheda Highway, Talegaon' },
+    },
+    issue: 'Mastitis suspected in left-rear quarter',
+    symptoms: 'Left-rear quarter swollen, warm to touch, milk has clots and yellowish flakes.',
+    duration: '3 days', prevTreatment: 'Warm compress', notes: '', priority: 'High', status: 'Accepted',
+  },
+  {
+    id: 'HR-1003',
+    date: '2026-10-26',
+    animal: { name: 'Ganga', tag: '#COW-2041', type: 'Cow', breed: 'Gir', age: '5 Yrs', gender: 'Female', image: '' },
+    farmer: {
+      name: 'Devendra Ji', mobile: '9712388452', email: '', farm: 'Ganga Bovines',
+      location: { village: 'Radhanpur', taluka: 'Mehsana', district: 'Mehsana', state: 'Gujarat', pincode: '384240', address: 'Village Radhanpur, Mehsana Dist.' },
+    },
+    issue: 'Pregnancy check & AI review',
+    symptoms: 'Day 62 post-insemination. Need confirmation by ultrasound/palpation.',
+    duration: '62 days post-AI', prevTreatment: 'Artificial Insemination', notes: 'Gir semen straw #GIR-98.', priority: 'Normal', status: 'Completed',
+  },
+  {
+    id: 'HR-1004',
+    date: '2026-10-25',
+    animal: { name: 'Radha', tag: '#CALF-0912', type: 'Calf', breed: 'HF Cross', age: '2 Months', gender: 'Female', image: '' },
+    farmer: {
+      name: 'Ramesh Shah', mobile: '9901233445', email: 'ramesh@apex.in', farm: 'Apex Agrotech',
+      location: { village: 'Gandhinagar', taluka: 'Gandhinagar', district: 'Gandhinagar', state: 'Gujarat', pincode: '382010', address: 'Survey 88, Gandhinagar Bypass' },
+    },
+    issue: 'Severe diarrhea & lethargy in young calf',
+    symptoms: 'Watery profuse diarrhea for 18 hours, sunken eyes, cold extremities.',
+    duration: '18 hours', prevTreatment: 'ORS given at home', notes: 'Urgent visit requested.', priority: 'Emergency', status: 'Rejected',
+    rejectionReason: 'Outside operational radius (>35 km)',
+  },
+  {
+    id: 'HR-1005',
+    date: '2026-10-24',
+    animal: { name: 'Meera', tag: '#COW-3105', type: 'Buffalo', breed: 'Murrah', age: '6 Yrs', gender: 'Female', image: '' },
+    farmer: {
+      name: 'Anand Verma', mobile: '9423111223', email: '', farm: 'GreenPastures Dairy',
+      location: { village: 'Chhatral', taluka: 'Kalol', district: 'Gandhinagar', state: 'Gujarat', pincode: '382729', address: 'Chhatral GIDC Road, Kalol Taluka' },
+    },
+    issue: 'Sudden rumen bloat & respiratory distress',
+    symptoms: 'Severe left paralumbar fossa distension, grunting respiration after eating fermented clover.',
+    duration: '4 hours', prevTreatment: 'None', notes: 'Requires immediate on-site attention.', priority: 'Emergency', status: 'Accepted',
+  },
+  {
+    id: 'HR-1006',
+    date: '2026-10-23',
+    animal: { name: 'Durga', tag: '#COW-1980', type: 'Cow', breed: 'Sahiwal', age: '4 Yrs', gender: 'Female', image: '' },
+    farmer: {
+      name: 'Meena Devi', mobile: '9724566778', email: '', farm: 'Kisan Dairy Co-op',
+      location: { village: 'Viramgam', taluka: 'Viramgam', district: 'Ahmedabad', state: 'Gujarat', pincode: '382150', address: 'Viramgam Outskirts, Near Highway' },
+    },
+    issue: 'Limping in right hind leg / hoof infection suspected',
+    symptoms: 'Reluctant to put weight on right rear leg, interdigital skin red with foul odor.',
+    duration: '5 days', prevTreatment: 'Antiseptic wash', notes: 'Schedule afternoon visit.', priority: 'High', status: 'Pending',
+  },
+  {
+    id: 'HR-1007',
+    date: '2026-10-22',
+    animal: { name: 'Kamala', tag: '#COW-8812', type: 'Cow', breed: 'HF', age: '3.8 Yrs', gender: 'Female', image: '' },
+    farmer: {
+      name: 'Kanti Bhai Solanki', mobile: '9824455112', email: '', farm: 'Panchamrit Farms',
+      location: { village: 'Godhra', taluka: 'Godhra', district: 'Panchmahal', state: 'Gujarat', pincode: '389001', address: 'Godhra Bypass Road, Panchamrit Farms' },
+    },
+    issue: 'Sole ulcer with digital dermatitis',
+    symptoms: 'Hoof trimmed, copper sulfate bandage applied, oxytetracycline spray ongoing.',
+    duration: '7 days', prevTreatment: 'Hoof trimming', notes: 'Bandage change due today.', priority: 'Normal', status: 'Completed',
+  },
+  {
+    id: 'HR-1008',
+    date: '2026-10-21',
+    animal: { name: 'Saraswati', tag: '#COW-6019', type: 'Buffalo', breed: 'Mehsana', age: '5.5 Yrs', gender: 'Female', image: '' },
+    farmer: {
+      name: 'Dinesh Chaudhary', mobile: '9879922331', email: 'dinesh@banas.in', farm: 'Banas Cattle Care',
+      location: { village: 'Deesa', taluka: 'Deesa', district: 'Banaskantha', state: 'Gujarat', pincode: '385535', address: 'Deesa Highway, Banaskantha District' },
+    },
+    issue: 'Uterine prolapse post-partum repair follow-up',
+    symptoms: 'Buhner suture intact, animal standing comfortably, receiving flunixin and calcium.',
+    duration: '3 days post-op', prevTreatment: 'Uterine prolapse repair surgery', notes: 'Post-op monitoring Day 3.', priority: 'High', status: 'Accepted',
+  },
+]
