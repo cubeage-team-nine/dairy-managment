@@ -1,292 +1,249 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Plus, Search, Bell, AlertTriangle, CalendarDays, ShieldCheck, Stethoscope, MapPin } from 'lucide-react'
+import { Plus, Search, CalendarDays, Stethoscope, ShieldCheck } from 'lucide-react'
 import StatCard from '../../../components/common/StatCard'
 import CommonModal from '../../../components/modals/CommonModal'
 import CommonTable from '../../../components/tables/CommonTable'
 import TableActions from '../../../components/tables/TableActions'
 import TableEmptyState from '../../../components/tables/TableEmptyState'
 import TablePagination from '../../../components/tables/TablePagination'
-import { getMyHealthRecords } from '../../farmers/farmers.service'
+import { getAnimals } from '../../animals/animals.service'
+import {
+  createMyHealthRecord,
+  deleteMyHealthRecord,
+  getMyHealthRecords,
+  updateMyHealthRecord,
+} from '../../farmers/farmers.service'
 
-// ── sample data includes treatingDoctor – replaced by API once backend ready ──
-const initialRecords = [
-  {
-    id: 1, date: '12 May 2026', animalTag: '#COW-4094', animalName: 'Lakshmi',
-    breed: 'HF', age: '4 Yrs', condition: 'Mastitis (Mild)', severity: 'Severe',
-    symptoms: 'Swollen udder, reduced milk yield, warmth on palpation.',
-    treatment: 'Intramammary Infusion', medicines: 'Ceftiofur 125mg OD × 3 days',
-    treatmentStart: '12 May 2026', followUpDate: '19 May 2026',
-    status: 'Under Treatment',
-    treatingDoctor: { name: 'Dr. Arjun Sharma', qualification: 'BVSc & AH', specialization: 'Bovine Medicine', mobile: '9876543210', assignedDate: '12 May 2026' },
-  },
-  {
-    id: 2, date: '11 May 2026', animalTag: '#COW-4022', animalName: 'Gauri',
-    breed: 'Jersey', age: '3 Yrs', condition: 'Hoof Trimming', severity: 'Low',
-    symptoms: 'Limping in right hind leg, overgrown hoof.',
-    treatment: 'Preventative Care', medicines: 'Copper sulfate bandage',
-    treatmentStart: '11 May 2026', followUpDate: '',
-    status: 'Completed',
-    treatingDoctor: { name: 'Dr. Priya Desai', qualification: 'MVSc', specialization: 'Surgery', mobile: '9123456780', assignedDate: '11 May 2026' },
-  },
-  {
-    id: 3, date: '10 May 2026', animalTag: '#COW-4105', animalName: 'Radha',
-    breed: 'Gir', age: '5 Yrs', condition: 'Rumination Drop', severity: 'Moderate',
-    symptoms: 'Decreased rumination, mild bloat, reduced feed intake.',
-    treatment: 'Probiotic Supplement', medicines: 'Probiotic gel 100ml BID × 5 days',
-    treatmentStart: '10 May 2026', followUpDate: '15 May 2026',
-    status: 'Under Observation',
-    treatingDoctor: { name: 'Dr. Neha Joshi', qualification: 'PhD Vet Sci', specialization: 'Pathology', mobile: '', assignedDate: '10 May 2026' },
-  },
-  {
-    id: 4, date: '08 May 2026', animalTag: '#COW-3980', animalName: 'Kamala',
-    breed: 'Sahiwal', age: '6 Yrs', condition: 'Milk Fever', severity: 'Severe',
-    symptoms: 'Weakness, inability to stand, cold extremities.',
-    treatment: 'Calcium gluconate IV', medicines: 'Calborol 450ml IV, Calcium gel OD × 3 days',
-    treatmentStart: '08 May 2026', followUpDate: '10 May 2026',
-    status: 'Recovered',
-    treatingDoctor: { name: 'Dr. Arjun Sharma', qualification: 'BVSc & AH', specialization: 'Bovine Medicine', mobile: '9876543210', assignedDate: '08 May 2026' },
-  },
+const blank = {
+  animal_id: '',
+  visit_date: new Date().toISOString().slice(0, 10),
+  disease: '',
+  medicine: '',
+  dose: '',
+  treatment: '',
+  doctor_recommendation: '',
+  symptoms: '',
+  treatment_duration: '',
+  doctor_notes: '',
+  follow_up_date: '',
+  health_status: '',
+}
+const input = 'w-full rounded-lg border p-3 text-sm outline-none focus:border-green-500'
+const list = (response) => response?.data?.items ?? response?.data ?? []
+const errorText = (error) => error.response?.data?.detail || 'Unable to complete the request.'
+const treatmentStatus = (value) => ({ 'Under Treatment': 'Ongoing', Recovered: 'Completed' }[value] || value || '—')
+const formFields = [
+  ['visit_date', 'Treatment Start Date', 'date'],
+  ['disease', 'Disease / Health Issue', 'text'],
+  ['symptoms', 'Symptoms', 'textarea'],
+  ['medicine', 'Medicine', 'text'],
+  ['dose', 'Medicine Dosage', 'text'],
+  ['treatment_duration', 'Treatment Duration', 'text'],
+  ['treatment', 'Treatment', 'textarea'],
+  ['doctor_recommendation', 'Doctor Recommendation', 'textarea'],
+  ['doctor_notes', 'Doctor Notes', 'textarea'],
+  ['follow_up_date', 'Follow-up Date', 'date'],
+  ['health_status', 'Treatment Status', 'text'],
 ]
 
-const sel    = 'w-full rounded-lg border p-3 text-sm'
-const inp    = 'w-full rounded-lg border p-3 text-sm outline-none focus:border-green-500'
-const severities = ['Severe', 'Moderate', 'Low']
-const statuses   = ['Under Treatment', 'Under Observation', 'Completed', 'Recovered']
-const emptyForm  = { animalTag:'', animalName:'', breed:'', age:'', condition:'', severity:'Moderate', symptoms:'', treatment:'', medicines:'', treatmentStart:'', followUpDate:'', status:'Under Treatment' }
-const ViewField = ({ label, value }) => (
-  <div><label className="mb-1 block text-xs font-medium text-gray-500">{label}</label>
-    <p className="rounded-lg border bg-gray-50 p-3 text-sm">{value || '—'}</p>
-  </div>
-)
-
 export default function HealthRecordsPage() {
-  const [records, setRecords]         = useState(initialRecords)
-  const [search, setSearch]           = useState('')
-  const [severityFilter, setSeverity] = useState('All')
-  const [statusFilter, setStatus]     = useState('All')
-  const [showModal, setShowModal]     = useState(false)
-  const [viewRecord, setViewRecord]   = useState(null)
+  const [records, setRecords] = useState([])
+  const [animals, setAnimals] = useState([])
+  const [search, setSearch] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [viewRecord, setViewRecord] = useState(null)
   const [editingRecord, setEditingRecord] = useState(null)
-  const [form, setForm]               = useState(emptyForm)
-  const [page, setPage]               = useState(1)
+  const [form, setForm] = useState(blank)
+  const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
   const pageSize = 5
-  const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }))
-  const active = records.filter(r => ['Under Treatment','Under Observation'].includes(r.status)).length
 
-  // Try to load from backend; fall back to sample data silently
-  useEffect(() => {
-    getMyHealthRecords()
-      .then(res => { const d = res.data?.data ?? res.data; if (Array.isArray(d) && d.length) setRecords(d) })
-      .catch(() => {})
-  }, [])
-
-  const filtered = useMemo(() => records.filter(r =>
-    `${r.animalTag} ${r.condition} ${r.treatment} ${r.treatingDoctor?.name ?? ''}`.toLowerCase().includes(search.toLowerCase()) &&
-    (severityFilter === 'All' || r.severity === severityFilter) &&
-    (statusFilter   === 'All' || (statusFilter === 'Active' ? ['Under Treatment','Under Observation'].includes(r.status) : r.status === statusFilter))
-  ), [records, search, severityFilter, statusFilter])
-
-  const rows = filtered.slice((page - 1) * pageSize, page * pageSize)
-  const openAdd  = () => { setEditingRecord(null); setForm(emptyForm); setShowModal(true) }
-  const openEdit = r  => { setEditingRecord(r); setForm({ ...emptyForm, ...r, animalTag: r.animalTag.replace('#','') }); setShowModal(true) }
-  const closeModal = () => { setShowModal(false); setForm(emptyForm); setEditingRecord(null) }
-
-  const handleSubmit = e => {
-    e.preventDefault()
-    if (!form.animalTag.trim() || !form.condition.trim() || !form.treatment.trim()) return
-    const data = { ...form, animalTag: form.animalTag.startsWith('#') ? form.animalTag : `#${form.animalTag}`,
-      date: editingRecord?.date || new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }),
-      treatingDoctor: editingRecord?.treatingDoctor || null }
-    setRecords(old => editingRecord ? old.map(r => r.id === editingRecord.id ? { ...r, ...data } : r) : [{ ...data, id: Date.now() }, ...old])
-    closeModal()
+  const load = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const [recordResponse, animalResponse] = await Promise.all([
+        getMyHealthRecords(),
+        getAnimals(),
+      ])
+      setRecords(list(recordResponse))
+      setAnimals(list(animalResponse))
+    } catch (requestError) {
+      setError(errorText(requestError))
+    } finally {
+      setLoading(false)
+    }
   }
+  useEffect(() => { load() }, [])
 
-  const handleDelete = id => { if (window.confirm('Delete this health record?')) setRecords(old => old.filter(r => r.id !== id)) }
+  const animalsById = useMemo(
+    () => new Map(animals.map((animal) => [animal.id, animal])),
+    [animals],
+  )
+  const filtered = records.filter((record) => {
+    const animal = animalsById.get(record.animal_id)
+    return `${record.animal_tag ?? animal?.tag_number ?? ''} ${record.disease ?? ''} ${record.treatment ?? ''} ${record.medicine ?? ''}`
+      .toLowerCase().includes(search.toLowerCase())
+  })
+  const rows = filtered.slice((page - 1) * pageSize, page * pageSize)
+  const thisMonth = new Date().toISOString().slice(0, 7)
+  const ownedRecords = records.filter((record) => !record.doctor_id)
 
-  const statusBadge = s => {
-    if (s === 'Recovered' || s === 'Completed') return 'bg-green-100 text-green-700'
-    if (s === 'Under Treatment')  return 'bg-orange-100 text-orange-700'
-    if (s === 'Under Observation') return 'bg-blue-100 text-blue-700'
-    return 'bg-gray-100 text-gray-600'
+  const closeModal = () => {
+    setShowModal(false)
+    setForm(blank)
+    setEditingRecord(null)
+  }
+  const openAdd = () => {
+    setEditingRecord(null)
+    setForm(blank)
+    setShowModal(true)
+  }
+  const openEdit = (record) => {
+    setEditingRecord(record)
+    setForm({
+      animal_id: record.animal_id,
+      visit_date: record.visit_date,
+      treatment_duration: record.treatment_duration ?? '',
+      disease: record.disease ?? '',
+      symptoms: record.symptoms ?? '',
+      medicine: record.medicine ?? '',
+      dose: record.dose ?? '',
+      treatment_duration: record.treatment_duration ?? '',
+      treatment: record.treatment ?? '',
+      doctor_recommendation: record.doctor_recommendation ?? '',
+      doctor_notes: record.doctor_notes ?? '',
+      follow_up_date: record.follow_up_date ?? '',
+      health_status: record.health_status ?? '',
+    })
+    setShowModal(true)
+  }
+  const change = (event) => {
+    setForm((current) => ({ ...current, [event.target.name]: event.target.value }))
+  }
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setSaving(true)
+    setError('')
+    const payload = {
+      ...form,
+      disease: form.disease || null,
+      medicine: form.medicine || null,
+      dose: form.dose || null,
+      treatment: form.treatment || null,
+      doctor_recommendation: form.doctor_recommendation || null,
+    }
+    try {
+      if (editingRecord) {
+        const update = { ...payload }
+        delete update.animal_id
+        await updateMyHealthRecord(editingRecord.id, update)
+      } else {
+        await createMyHealthRecord(payload)
+      }
+      closeModal()
+      await load()
+    } catch (requestError) {
+      setError(errorText(requestError))
+    } finally {
+      setSaving(false)
+    }
+  }
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this health record?')) return
+    try {
+      await deleteMyHealthRecord(id)
+      await load()
+    } catch (requestError) {
+      setError(errorText(requestError))
+    }
   }
 
   const columns = [
-    { key: 'date',       label: 'DATE' },
-    { key: 'animalTag',  label: 'ANIMAL TAG' },
-    { key: 'condition',  label: 'CONDITION' },
-    { key: 'severity',   label: 'SEVERITY' },
-    { key: 'treatment',  label: 'TREATMENT' },
-    { key: 'treatingDoctor', label: 'TREATING DOCTOR', render: r => (
-      r.treatingDoctor
-        ? <div className="flex items-center gap-1.5"><Stethoscope size={13} className="shrink-0 text-green-600"/><span className="text-xs font-medium text-gray-800">{r.treatingDoctor.name}</span></div>
-        : <span className="text-xs text-gray-400">Not assigned</span>
-    )},
-    { key: 'status', label: 'STATUS', render: r =>
-      <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${statusBadge(r.status)}`}>{r.status}</span>
-    },
-    { key: 'actions', label: 'ACTIONS', render: row =>
-      <TableActions onEdit={() => openEdit(row)} onView={() => setViewRecord(row)} onDelete={() => handleDelete(row.id)} />
-    },
+    { key: 'visit_date', label: 'TREATMENT START' },
+    { key: 'animal_tag', label: 'ANIMAL TAG', render: (record) =>
+      record.animal_tag ?? animalsById.get(record.animal_id)?.tag_number ?? '—' },
+    { key: 'disease', label: 'HEALTH ISSUE', render: (record) => <>{record.disease || '—'}<p className="max-w-52 truncate text-xs text-gray-500">{record.symptoms || ''}</p></> },
+    { key: 'medicine', label: 'MEDICINE / DOSAGE', render: (record) => <>{record.medicine || '—'}<p className="text-xs text-gray-500">{record.dose || 'Dosage not listed'}</p></> },
+    { key: 'health_status', label: 'TREATMENT STATUS', render: (record) => treatmentStatus(record.health_status) },
+    { key: 'doctor_name', label: 'DOCTOR', render: (record) => record.doctor_name
+      ? <span className="flex items-center gap-1 text-xs text-gray-600"><Stethoscope size={13} />{record.doctor_name}</span>
+      : <span className="flex items-center gap-1 text-xs text-green-700"><ShieldCheck size={13} />Farmer entry</span> },
+    { key: 'actions', label: 'ACTIONS', render: (record) => record.doctor_id
+      ? <button type="button" onClick={() => setViewRecord(record)} className="rounded-md border px-3 py-2 text-xs">View</button>
+      : <TableActions onEdit={() => openEdit(record)} onView={() => setViewRecord(record)} onDelete={() => handleDelete(record.id)} /> },
   ]
+
+  const detail = (record) => (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div><label className="mb-1 block text-xs text-gray-500">Animal Name / Tag</label><p className="rounded-lg border bg-gray-50 p-3 text-sm">{record.animal_name ?? record.animal_tag ?? animalsById.get(record.animal_id)?.tag_number ?? '—'}</p></div>
+      {formFields.filter(([name]) => name !== 'doctor_recommendation').map(([name, label]) => (
+        <div key={name}><label className="mb-1 block text-xs text-gray-500">{label}</label><p className="rounded-lg border bg-gray-50 p-3 text-sm whitespace-pre-wrap">{name === 'health_status' ? treatmentStatus(record[name]) : record[name] || '—'}</p></div>
+      ))}
+      <div><label className="mb-1 block text-xs text-gray-500">Doctor</label><p className="rounded-lg border bg-gray-50 p-3 text-sm">{record.doctor_name || 'Farmer entry'}</p></div>
+      <div><label className="mb-1 block text-xs text-gray-500">Doctor Recommendation</label><p className="rounded-lg border bg-gray-50 p-3 text-sm whitespace-pre-wrap">{record.doctor_recommendation || '—'}</p></div>
+    </div>
+  )
 
   return (
     <div className="min-h-full bg-[#FBFCF8] text-[#17251B]">
-      {/* Header */}
       <header className="flex flex-wrap items-center justify-between gap-4 border-b bg-white px-6 py-5">
         <div>
           <h1 className="text-2xl font-semibold">Health Logs & Disease Surveillance</h1>
-          <p className="mt-1 text-xs text-gray-500">Monitor animal health records and assigned doctors</p>
+          <p className="mt-1 text-xs text-gray-500">Monitor health records for your animals.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 text-gray-400" size={17}/>
-            <input value={search} onChange={e => { setSearch(e.target.value); setPage(1) }}
-              placeholder="Search records, tag, doctor..."
-              className="h-10 w-64 rounded-lg border bg-white pl-10 pr-3 text-sm outline-none focus:border-green-500"/>
-          </div>
-          <button type="button" className="relative rounded-full border p-2 text-gray-600"><Bell size={18}/></button>
-        </div>
+        <button type="button" onClick={openAdd} className="flex items-center gap-2 rounded-lg bg-green-700 px-4 py-2.5 text-sm text-white"><Plus size={16} /> Add Health Record</button>
       </header>
-
-      <main className="space-y-6 p-6">
-        {/* Stat Cards */}
-        <section className="grid gap-4 md:grid-cols-3">
-          <StatCard title="Active Illnesses"    value={active}         icon={AlertTriangle}/>
-          <StatCard title="Routine Vet Visits"  value="3 Scheduled"    icon={CalendarDays}/>
-          <StatCard title="Healthy Herd Rate"   value="91.6%"          icon={ShieldCheck}/>
-        </section>
-
-        {/* Filters + Add */}
-        <section className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap gap-3">
-            <select value={severityFilter} onChange={e => { setSeverity(e.target.value); setPage(1) }} className="rounded-lg border bg-white px-4 py-2 text-sm">
-              <option value="All">Severity: All</option>
-              {severities.map(s => <option key={s}>{s}</option>)}
-            </select>
-            <select value={statusFilter} onChange={e => { setStatus(e.target.value); setPage(1) }} className="rounded-lg border bg-white px-4 py-2 text-sm">
-              <option value="All">Status: All</option>
-              <option value="Active">Active</option>
-              {statuses.map(s => <option key={s}>{s}</option>)}
-            </select>
+      {error && <p role="alert" className="mx-6 mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+      <div className="grid gap-4 p-6 sm:grid-cols-3">
+        <StatCard title="Health Records" value={records.length} subtitle="Records for your animals" icon={Stethoscope} />
+        <StatCard title="This Month" value={records.filter((record) => record.visit_date?.slice(0, 7) === thisMonth).length} subtitle="Visits recorded this month" icon={CalendarDays} />
+        <StatCard title="Farmer Entries" value={ownedRecords.length} subtitle="Records entered by you" icon={ShieldCheck} />
+      </div>
+      <section className="mx-6 mb-6 overflow-hidden rounded-xl border bg-white">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4">
+          <div className="relative min-w-[200px] flex-1">
+            <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+            <input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1) }} placeholder="Search animal, issue, medicine..." className="w-full rounded-lg border py-2.5 pl-10 pr-3 text-sm outline-none focus:border-green-500" />
           </div>
-          <button type="button" onClick={openAdd}
-            className="flex items-center gap-2 rounded-lg bg-[#17653A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-800">
-            <Plus size={17}/> Log Health Issue
-          </button>
-        </section>
-
-        {/* Table */}
-        <section className="overflow-x-auto rounded-xl border bg-white p-4">
-          {rows.length ? <CommonTable columns={columns} data={rows}/> : <TableEmptyState message="No health records found"/>}
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4 text-xs text-gray-500">
-            <span>Showing {filtered.length ? (page-1)*pageSize+1 : 0} to {Math.min(page*pageSize,filtered.length)} of {filtered.length} records</span>
-            <TablePagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage}/>
-          </div>
-        </section>
-      </main>
-
-      {/* ── Add / Edit Modal ─────────────────────────────────────────── */}
-      <CommonModal isOpen={showModal} onClose={closeModal} title={editingRecord ? 'Edit Health Record' : 'Log Health Issue'}>
+        </div>
+        <div className="p-4">
+          {loading ? <p className="py-6 text-sm text-gray-500">Loading health records…</p>
+            : rows.length ? <CommonTable columns={columns} data={rows} />
+              : <TableEmptyState message="No health records found." />}
+          {!loading && <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4 text-xs text-gray-500">
+            <span>Showing {filtered.length ? (page - 1) * pageSize + 1 : 0} to {Math.min(page * pageSize, filtered.length)} of {filtered.length} records</span>
+            <TablePagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} />
+          </div>}
+        </div>
+      </section>
+      <CommonModal isOpen={showModal} onClose={closeModal} title={editingRecord ? 'Edit Health Record' : 'Add Health Record'}>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            {[['animalTag','Animal Tag'],['animalName','Animal Name'],['breed','Breed'],['age','Age']].map(([k,l]) => (
-              <label key={k} className="text-xs font-medium text-gray-600">{l}
-                <input required={k==='animalTag'} value={form[k]||''} onChange={set(k)} className={`mt-1 ${inp}`}/>
+          {!editingRecord && <label className="block text-sm font-medium">Animal
+            <select required name="animal_id" value={form.animal_id} onChange={change} className={input}>
+              <option value="">Select animal</option>
+              {animals.map((animal) => <option key={animal.id} value={animal.id}>{animal.tag_number} · {animal.animal_type}</option>)}
+            </select>
+          </label>}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {formFields.map(([name, label, type]) => (
+              <label key={name} className="text-sm font-medium">{label}
+                {type === 'textarea'
+                  ? <textarea name={name} value={form[name]} onChange={change} className={input} rows={3} />
+                  : <input required={name === 'visit_date'} type={type} name={name} value={form[name]} onChange={change} className={input} />}
               </label>
             ))}
-            <label className="text-xs font-medium text-gray-600">Condition
-              <input required value={form.condition} onChange={set('condition')} className={`mt-1 ${inp}`}/>
-            </label>
-            <label className="text-xs font-medium text-gray-600">Severity
-              <select value={form.severity} onChange={set('severity')} className={`mt-1 ${sel}`}>{severities.map(s=><option key={s}>{s}</option>)}</select>
-            </label>
-            <label className="text-xs font-medium text-gray-600 col-span-2">Symptoms
-              <input value={form.symptoms||''} onChange={set('symptoms')} className={`mt-1 ${inp}`}/>
-            </label>
-            <label className="text-xs font-medium text-gray-600">Treatment / Medicine
-              <input required value={form.treatment} onChange={set('treatment')} className={`mt-1 ${inp}`}/>
-            </label>
-            <label className="text-xs font-medium text-gray-600">Medicines
-              <input value={form.medicines||''} onChange={set('medicines')} className={`mt-1 ${inp}`}/>
-            </label>
-            <label className="text-xs font-medium text-gray-600">Treatment Start
-              <input type="date" value={form.treatmentStart||''} onChange={set('treatmentStart')} className={`mt-1 ${inp}`}/>
-            </label>
-            <label className="text-xs font-medium text-gray-600">Follow-up Date
-              <input type="date" value={form.followUpDate||''} onChange={set('followUpDate')} className={`mt-1 ${inp}`}/>
-            </label>
-            <label className="text-xs font-medium text-gray-600 col-span-2">Status
-              <select value={form.status} onChange={set('status')} className={`mt-1 ${sel}`}>{statuses.map(s=><option key={s}>{s}</option>)}</select>
-            </label>
           </div>
           <div className="flex justify-end gap-3 border-t pt-4">
-            <button type="button" onClick={closeModal} className="rounded-lg border px-5 py-2 text-sm">Cancel</button>
-            <button type="submit" className="rounded-lg bg-[#17653A] px-5 py-2 text-sm text-white">{editingRecord ? 'Save Changes' : 'Log Issue'}</button>
+            <button type="button" onClick={closeModal} className="rounded-lg border px-4 py-2 text-sm">Cancel</button>
+            <button disabled={saving} className="rounded-lg bg-green-700 px-5 py-2 text-sm text-white disabled:opacity-60">{saving ? 'Saving…' : editingRecord ? 'Save Changes' : 'Save Record'}</button>
           </div>
         </form>
       </CommonModal>
-
-      {/* ── View Details Modal ───────────────────────────────────────── */}
       <CommonModal isOpen={!!viewRecord} onClose={() => setViewRecord(null)} title="Health Record Details">
-        {viewRecord && (
-          <div className="space-y-5">
-            {/* Animal */}
-            <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400">Animal Information</p>
-              <div className="grid grid-cols-2 gap-3">
-                <ViewField label="Animal Name"  value={viewRecord.animalName}/>
-                <ViewField label="Animal Tag"   value={viewRecord.animalTag}/>
-                <ViewField label="Breed"        value={viewRecord.breed}/>
-                <ViewField label="Age"          value={viewRecord.age}/>
-              </div>
-            </div>
-
-            {/* Health */}
-            <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400">Health Information</p>
-              <div className="grid grid-cols-2 gap-3">
-                <ViewField label="Condition"         value={viewRecord.condition}/>
-                <ViewField label="Severity"          value={viewRecord.severity}/>
-                <ViewField label="Treatment Start"   value={viewRecord.treatmentStart}/>
-                <ViewField label="Follow-up Date"    value={viewRecord.followUpDate}/>
-                <ViewField label="Status"            value={viewRecord.status}/>
-                <ViewField label="Medicines"         value={viewRecord.medicines}/>
-              </div>
-              {viewRecord.symptoms && (
-                <div className="mt-2 rounded-lg border bg-gray-50 p-3">
-                  <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400">Symptoms</p>
-                  <p className="mt-1 text-sm text-gray-700">{viewRecord.symptoms}</p>
-                </div>
-              )}
-              <div className="mt-2 rounded-lg border bg-gray-50 p-3">
-                <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400">Treatment Description</p>
-                <p className="mt-1 text-sm text-gray-700">{viewRecord.treatment}</p>
-              </div>
-            </div>
-
-            {/* Doctor */}
-            <div>
-              <p className="mb-2 flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-gray-400">
-                <Stethoscope size={12} className="text-green-600"/> Treating Doctor
-              </p>
-              {viewRecord.treatingDoctor ? (
-                <div className="grid grid-cols-2 gap-3">
-                  <ViewField label="Doctor Name"     value={viewRecord.treatingDoctor.name}/>
-                  <ViewField label="Qualification"   value={viewRecord.treatingDoctor.qualification}/>
-                  <ViewField label="Specialization"  value={viewRecord.treatingDoctor.specialization}/>
-                  <ViewField label="Mobile"          value={viewRecord.treatingDoctor.mobile}/>
-                  <ViewField label="Assigned Date"   value={viewRecord.treatingDoctor.assignedDate}/>
-                </div>
-              ) : (
-                <p className="rounded-lg border bg-gray-50 p-3 text-sm text-gray-400">No doctor assigned yet. Use Doctors page to send a health request.</p>
-              )}
-            </div>
-
-            <div className="flex justify-end border-t pt-4">
-              <button type="button" onClick={() => setViewRecord(null)} className="rounded-lg border px-5 py-2 text-sm">Close</button>
-            </div>
-          </div>
-        )}
+        {viewRecord && detail(viewRecord)}
       </CommonModal>
     </div>
   )

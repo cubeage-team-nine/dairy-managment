@@ -47,36 +47,8 @@ export function useChangePassword() {
   return { isSaving, error, success, save }
 }
 
-// Notifications have no backend module yet — this mock data stands in for it.
-// Swap the body of this hook for a real fetch once a notifications API exists;
-// nothing in NotificationsList or ProfilePage needs to change when that happens.
-const MOCK_NOTIFICATIONS = [
-  {
-    id: 1,
-    message: 'Welcome to Smart Dairy Manager! Your account is ready to use.',
-    timestamp: '2026-08-20T09:00:00Z',
-    isRead: true,
-  },
-  {
-    id: 2,
-    message: 'Your profile details were saved successfully.',
-    timestamp: '2026-08-22T13:15:00Z',
-    isRead: true,
-  },
-  {
-    id: 3,
-    message: 'New feature available: DMI Calculator is now live on your dashboard.',
-    timestamp: '2026-08-25T10:30:00Z',
-    isRead: false,
-  },
-]
-
 export function useNotifications() {
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS)
-
-  const markAsRead = (id) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)))
-  }
-
+  const notifications = []
+  const markAsRead = () => {}
   return { notifications, markAsRead }
 }

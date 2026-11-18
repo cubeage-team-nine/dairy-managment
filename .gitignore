@@ -12,6 +12,7 @@ venv/
 *.egg-info/
 .pytest_cache/
 .mypy_cache/
+apps/backend/uploads/
 
 # Env
 .env

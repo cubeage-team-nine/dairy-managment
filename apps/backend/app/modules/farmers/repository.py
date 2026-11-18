@@ -44,3 +44,10 @@ def get_farmer_by_id(db: Session, farmer_id: uuid.UUID):
         .join(User, FarmerProfile.user_id == User.id)
         .where(FarmerProfile.id == farmer_id)
     ).first()
+
+
+def update_farmer_status(db: Session, user: User, status):
+    user.status = status
+    db.commit()
+    db.refresh(user)
+    return user

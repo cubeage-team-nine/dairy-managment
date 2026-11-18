@@ -40,7 +40,7 @@ const supportLinks = [
   },
   {
     label: "FAQs",
-    to: RoutePath.HELP_CENTER,
+    to: RoutePath.FEATURES,
   },
   {
     label: "Request a Demo",

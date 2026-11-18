@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout.jsx";
 import DashboardLayout from "../layouts/DashboardLayout.jsx";
@@ -32,6 +32,10 @@ import MilkCentersPage from "../modules/milk-centers/pages/MilkCentersPage.jsx";
 import AnimalsPage from "../modules/animals/pages/AnimalsPage.jsx";
 import MilkProductionPage from "../modules/milk/pages/MilkProductionPage.jsx";
 import FeedManagementPage from "../modules/feed/pages/FeedManagementPage.jsx";
+import AdminFeedTypesPage from "../modules/feed/pages/AdminFeedTypesPage.jsx";
+import AdminFeedManagementPage from "../modules/feed/pages/AdminFeedManagementPage.jsx";
+import AdminAnimalsPage from "../modules/animals/pages/AdminAnimalsPage.jsx";
+import AdminReportsPage from "../modules/reports/pages/AdminReportsPage.jsx";
 import DmiCalculatorPage from "../modules/dmi/pages/DmiCalculatorPage.jsx";
 import HealthRecordsPage from "../modules/health/pages/HealthRecordsPage.jsx";
 import BreedingRecordsPage from "../modules/breeding/pages/BreedingRecordsPage.jsx";
@@ -42,8 +46,11 @@ import MarketplacePage from "../modules/marketplace/pages/MarketplacePage.jsx";
 import RequestsPage from "../modules/doctor-requests/pages/RequestsPage.jsx";
 import HealthRequestsPage from "../modules/doctor-requests/pages/HealthRequestsPage.jsx";
 import DoctorHealthRecordsPage from "../modules/doctors/pages/DoctorHealthRecordsPage.jsx";
+import AssignedAnimalsPage from "../modules/doctors/pages/AssignedAnimalsPage.jsx";
+import DoctorMastitisCasesPage from "../modules/doctors/pages/DoctorMastitisCasesPage.jsx";
 import FarmerDoctorsPage from "../modules/farmers/pages/FarmerDoctorsPage.jsx";
 import ProfilePage from "../modules/profile/pages/ProfilePage.jsx";
+import NotificationsPage from "../modules/notifications/pages/NotificationsPage.jsx";
 
 const AppRoutes = () => {
   return (
@@ -56,6 +63,7 @@ const AppRoutes = () => {
         <Route path={RoutePath.ABOUT} element={<AboutPage />} />
         <Route path={RoutePath.CONTACT} element={<ContactPage />} />
         <Route path={RoutePath.LOGIN} element={<LoginPage />} />
+        <Route path={RoutePath.ADMIN_LOGIN} element={<LoginPage />} />
         <Route path={RoutePath.SIGNUP} element={<SignupPage />} />
         <Route path={RoutePath.FEATURES} element={<Features />} />
       </Route>
@@ -73,23 +81,35 @@ const AppRoutes = () => {
           {/* ================= ADMIN ================= */}
 
           <Route element={<RoleRoute allowedRoles={[USER_ROLES.ADMIN]} />}>
+            <Route path={RoutePath.ADMIN_NOTIFICATIONS} element={<NotificationsPage />} />
             <Route
               path={RoutePath.ADMIN_DASHBOARD}
               element={<AdminDashboardPage />}
             />
             <Route path={RoutePath.ADMIN_FARMERS} element={<FarmersPage />} />
             <Route path={RoutePath.ADMIN_DOCTORS} element={<DoctorsPage />} />
+            <Route path={RoutePath.ADMIN_ANIMALS} element={<AdminAnimalsPage />} />
             <Route path={RoutePath.ADMIN_FARMS} element={<FarmsPage />} />
             <Route
               path={RoutePath.ADMIN_MILK_CENTERS}
               element={<MilkCentersPage />}
             />
+            <Route
+              path={RoutePath.ADMIN_FEED_TYPES}
+              element={<AdminFeedTypesPage />}
+            />
+            <Route
+              path={RoutePath.ADMIN_FEED_MANAGEMENT}
+              element={<AdminFeedManagementPage />}
+            />
+            <Route path={RoutePath.ADMIN_REPORTS} element={<AdminReportsPage />} />
             <Route path={RoutePath.ADMIN_SETTINGS} element={<SettingsPage />} />
           </Route>
 
           {/* ================= FARMER ================= */}
 
           <Route element={<RoleRoute allowedRoles={[USER_ROLES.FARMER]} />}>
+            <Route path={RoutePath.FARMER_NOTIFICATIONS} element={<NotificationsPage />} />
             <Route
               path={RoutePath.FARMER_DASHBOARD}
               element={<FarmerDashboardPage />}
@@ -139,6 +159,7 @@ const AppRoutes = () => {
           {/* ================= DOCTOR ================= */}
 
           <Route element={<RoleRoute allowedRoles={[USER_ROLES.DOCTOR]} />}>
+            <Route path={RoutePath.DOCTOR_NOTIFICATIONS} element={<NotificationsPage />} />
             <Route
               path={RoutePath.DOCTOR_DASHBOARD}
               element={<DoctorDashboardPage />}
@@ -147,7 +168,7 @@ const AppRoutes = () => {
             <Route path={RoutePath.DOCTOR_HEALTH_REQUESTS} element={<HealthRequestsPage />} />
             <Route
               path={RoutePath.DOCTOR_ASSIGNED_ANIMALS}
-              element={<AnimalsPage />}
+              element={<AssignedAnimalsPage />}
             />
             <Route
               path={RoutePath.DOCTOR_HEALTH_RECORDS}
@@ -155,16 +176,18 @@ const AppRoutes = () => {
             />
             <Route
               path={RoutePath.DOCTOR_MASTITIS_CASES}
-              element={<MastitisRecordsPage />}
+              element={<DoctorMastitisCasesPage />}
             />
             <Route path={RoutePath.DOCTOR_PROFILE} element={<DoctorProfilePage />} />
+            <Route path={RoutePath.DOCTOR_SETTINGS} element={<SettingsPage />} />
           </Route>
 
         </Route>
+
+      <Route path={RoutePath.NOT_FOUND} element={<Navigate to={RoutePath.HOME} replace />} />
 
     </Routes>
   );
 };
 
 export default AppRoutes;
-

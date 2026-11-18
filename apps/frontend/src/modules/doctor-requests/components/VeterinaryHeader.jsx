@@ -1,7 +1,7 @@
 // src/modules/doctor-requests/components/VeterinaryHeader.jsx
-import React, { useState, useRef, useEffect } from 'react';
-import { Search, Bell, Check, Menu, X, Plus, Clock, AlertCircle } from 'lucide-react';
-import { NOTIFICATIONS_DATA } from '../doctor-requests.constants.js';
+import { useState, useRef, useEffect } from 'react';
+import { Search, Bell, Check, Menu, X, Plus } from 'lucide-react';
+import { getNotifications } from '../../notifications/notifications.service.js';
 
 export default function VeterinaryHeader({
   searchQuery,
@@ -12,12 +12,13 @@ export default function VeterinaryHeader({
   const [dutyStatus, setDutyStatus] = useState('ON DUTY');
   const [showDutyDropdown, setShowDutyDropdown] = useState(false);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
-  const [notifications, setNotifications] = useState(NOTIFICATIONS_DATA);
+  const [notifications, setNotifications] = useState([]);
 
   const dutyRef = useRef(null);
   const notifRef = useRef(null);
 
   useEffect(() => {
+    getNotifications().then((response) => setNotifications(response.items || [])).catch(() => setNotifications([]));
     function handleClickOutside(event) {
       if (dutyRef.current && !dutyRef.current.contains(event.target)) {
         setShowDutyDropdown(false);
@@ -30,11 +31,7 @@ export default function VeterinaryHeader({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const unreadCount = notifications.filter((n) => n.unread).length;
-
-  const markAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
-  };
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   const getDutyBadgeClasses = () => {
     switch (dutyStatus) {
@@ -128,7 +125,7 @@ export default function VeterinaryHeader({
               <div className="flex items-center justify-between px-4 pb-2 border-b border-gray-100">
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-sm text-gray-900">
-                    Live Case Alerts
+                    Follow-up Alerts
                   </span>
                   {unreadCount > 0 && (
                     <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700">
@@ -136,15 +133,6 @@ export default function VeterinaryHeader({
                     </span>
                   )}
                 </div>
-                {unreadCount > 0 && (
-                  <button
-                    type="button"
-                    onClick={markAllRead}
-                    className="text-xs text-[#1b6b3e] hover:underline font-semibold"
-                  >
-                    Mark all read
-                  </button>
-                )}
               </div>
 
               <div className="max-h-72 overflow-y-auto divide-y divide-gray-50 py-1">
@@ -152,17 +140,13 @@ export default function VeterinaryHeader({
                   <div
                     key={notif.id}
                     className={`p-3.5 hover:bg-gray-50 transition-colors ${
-                      notif.unread ? 'bg-emerald-50/40' : ''
+                      !notif.is_read ? 'bg-emerald-50/40' : ''
                     }`}
                   >
                     <div className="flex items-start gap-2.5">
                       <span
                         className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
-                          notif.type === 'emergency'
-                            ? 'bg-rose-500'
-                            : notif.type === 'lab'
-                            ? 'bg-amber-500'
-                            : 'bg-emerald-500'
+                          notif.status === 'COMPLETED' ? 'bg-slate-400' : 'bg-emerald-500'
                         }`}
                       />
                       <div className="flex-1 min-w-0">
@@ -173,7 +157,7 @@ export default function VeterinaryHeader({
                           {notif.description}
                         </p>
                         <span className="text-[10px] text-gray-400 mt-1 inline-block">
-                          {notif.time}
+                          {notif.reminder_date}
                         </span>
                       </div>
                     </div>

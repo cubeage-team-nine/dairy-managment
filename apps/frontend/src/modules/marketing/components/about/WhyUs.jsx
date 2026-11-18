@@ -25,8 +25,8 @@ const WhyUs = () => {
       ),
     },
     {
-      title: "In your language",
-      text: "Full interface in English, Hindi and Marathi, with regional units and Indian currency formats.",
+      title: "Clear daily records",
+      text: "Regional units and familiar Indian currency formats make everyday farm records easier to read.",
       icon: (
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M5 6h7M8.5 4v2M6.5 6c.5 3 2.2 5.2 5 6.8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />

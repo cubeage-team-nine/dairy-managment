@@ -1,12 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AuthContext } from './AuthContext.js'
 import { STORAGE_KEYS } from '../core/constants/app.constants.js'
 import { getMe, logout as logoutRequest } from '../modules/auth/auth.service.js'
 
+const getStoredToken = () => (
+  localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN)
+  || sessionStorage.getItem(STORAGE_KEYS.AUTH_TOKEN)
+)
+
 export function AuthProvider({ children }) {
+  const meRequestRef = useRef(null)
   const [user, setUser] = useState(null)
   const [isAuthenticated, setIsAuthenticated] = useState(
-    Boolean(localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN))
+    Boolean(getStoredToken())
   )
   const [isInitializing, setIsInitializing] = useState(isAuthenticated)
 
@@ -18,13 +24,15 @@ export function AuthProvider({ children }) {
 
     let ignore = false
 
-    getMe()
+    const request = meRequestRef.current ?? (meRequestRef.current = getMe())
+    request
       .then(({ data }) => {
         if (!ignore) setUser(data)
       })
       .catch(() => {
         if (!ignore) {
           localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
+          sessionStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
           setUser(null)
           setIsAuthenticated(false)
         }
@@ -40,8 +48,11 @@ export function AuthProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const login = (userData, token) => {
-    localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token)
+  const login = (userData, token, rememberMe = true) => {
+    localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
+    sessionStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
+    const storage = rememberMe ? localStorage : sessionStorage
+    storage.setItem(STORAGE_KEYS.AUTH_TOKEN, token)
     setUser(userData)
     setIsAuthenticated(true)
   }
@@ -54,6 +65,7 @@ export function AuthProvider({ children }) {
       // local state still needs clearing either way.
     }
     localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
+    sessionStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
     setUser(null)
     setIsAuthenticated(false)
   }

@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Search, Bell, X, AlertTriangle } from 'lucide-react'
 import { useAuth } from '../../../core/hooks/useAuth.js'
 import { ROLE_LABELS } from '../../../core/constants/app.constants.js'
+import RoutePath from '../../../core/constants/routes.constant.js'
 
 import { useDmiCalculator } from '../dmi.hooks.js'
 import DmiFormInputs from '../components/DmiFormInputs.jsx'
@@ -63,14 +65,14 @@ function DmiCalculatorPage() {
           </div>
 
           {/* Notification Button */}
-          <button
-            type="button"
+          <Link
+            to={RoutePath.FARMER_NOTIFICATIONS}
             className="relative rounded-full p-2 text-muted-foreground hover:bg-background"
             aria-label="Notifications"
           >
             <Bell className="h-4 w-4" />
             <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-destructive" />
-          </button>
+          </Link>
 
           {/* User Profile Badge */}
           <div className="flex items-center gap-2.5">

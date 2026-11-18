@@ -22,6 +22,11 @@ class HealthRecord(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     dose: Mapped[str | None] = mapped_column(String(100))
     treatment: Mapped[str | None] = mapped_column(Text)
     doctor_recommendation: Mapped[str | None] = mapped_column(Text)
+    symptoms: Mapped[str | None] = mapped_column(Text)
+    doctor_notes: Mapped[str | None] = mapped_column(Text)
+    treatment_duration: Mapped[str | None] = mapped_column(String(100))
+    follow_up_date: Mapped[date | None] = mapped_column(Date)
+    health_status: Mapped[str | None] = mapped_column(String(50))
     visit_date: Mapped[date] = mapped_column(Date, nullable=False)
 
     animal: Mapped["Animal"] = relationship(back_populates="health_records")

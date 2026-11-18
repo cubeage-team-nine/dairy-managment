@@ -1,7 +1,7 @@
 import uuid
 from datetime import date
 
-from sqlalchemy import Date, ForeignKey, Index, Numeric
+from sqlalchemy import Date, ForeignKey, Index, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -21,6 +21,9 @@ class MilkRecord(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     snf: Mapped[float | None] = mapped_column(Numeric(5, 2))
     milk_rate: Mapped[float | None] = mapped_column(Numeric(10, 2))
     milk_value: Mapped[float | None] = mapped_column(Numeric(12, 2))
+    milk_session: Mapped[str | None] = mapped_column(String(20))
+    customer_name: Mapped[str | None] = mapped_column(String(150))
+    description: Mapped[str | None] = mapped_column(Text)
 
     animal: Mapped["Animal | None"] = relationship(back_populates="milk_records")
     farm: Mapped["Farm"] = relationship()

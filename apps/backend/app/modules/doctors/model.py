@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import ForeignKey, Integer, String
+from sqlalchemy import Boolean, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -20,5 +20,11 @@ class DoctorProfile(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     specialization: Mapped[str | None] = mapped_column(String(255))
     registration_number: Mapped[str | None] = mapped_column(String(100), unique=True)
     experience_years: Mapped[int | None] = mapped_column(Integer)
+    address: Mapped[str | None] = mapped_column(String(500))
+    village: Mapped[str | None] = mapped_column(String(150))
+    district: Mapped[str | None] = mapped_column(String(150))
+    state: Mapped[str | None] = mapped_column(String(150))
+    profile_photo: Mapped[str | None] = mapped_column(String(255))
+    is_available: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
     user: Mapped["User"] = relationship(back_populates="doctor_profile")

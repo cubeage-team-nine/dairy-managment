@@ -127,7 +127,7 @@ const CoreModule = () => {
 
               {/* Description */}
               <p className="font-body text-sm text-white/85 leading-relaxed mb-6">
-                Offline-friendly entry in English, Hindi and Marathi. Sync happens when the network returns.
+                Offline-friendly data entry works even when signal drops. Sync happens when the network returns.
               </p>
             </div>
 

@@ -28,7 +28,7 @@ const navLinks = [
   },
 ];
 
-export default function Navbar() {
+export default function Navbar({ onToggleSidebar, sidebarOpen = false }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
 
@@ -40,11 +40,31 @@ export default function Navbar() {
     return (
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link to={homePath} className="flex items-center">
-            <Logo />
-          </Link>
+          <div className="flex min-w-0 items-center gap-3">
+            {onToggleSidebar && (
+              <button
+                type="button"
+                onClick={onToggleSidebar}
+                className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:hidden"
+                aria-label={sidebarOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-controls="dashboard-sidebar"
+                aria-expanded={sidebarOpen}
+              >
+                {sidebarOpen ? (
+                  <X className="size-6" aria-hidden="true" />
+                ) : (
+                  <Menu className="size-6" aria-hidden="true" />
+                )}
+              </button>
+            )}
+            <Link to={homePath} className="flex min-w-0 items-center">
+              <Logo />
+            </Link>
+          </div>
 
-          <UserAvatarDropdown />
+          <div className="flex items-center gap-3">
+            <UserAvatarDropdown />
+          </div>
         </div>
       </header>
     );
@@ -130,6 +150,13 @@ export default function Navbar() {
               ))}
 
               <div className="mt-3 flex flex-col gap-2 border-t border-border pt-4">
+                <Link
+                  to={RoutePath.LOGIN}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="rounded-lg px-4 py-3 text-center text-sm font-medium text-foreground hover:bg-muted"
+                >
+                  Login
+                </Link>
                 <Link
                   to={RoutePath.SIGNUP}
                   onClick={() => setIsMenuOpen(false)}

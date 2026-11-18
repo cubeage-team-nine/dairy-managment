@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.api.v1.router import api_router
+from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.exceptions import AppError, ConflictError, ForbiddenError, NotFoundError, UnauthorizedError
 from app.core.logging import configure_logging, get_logger

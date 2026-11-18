@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import ForeignKey, Index, String, Text
+from sqlalchemy import ForeignKey, Index, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -12,6 +12,10 @@ class Pan(Base, UUIDPrimaryKeyMixin, TimestampMixin):
 
     farm_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("farms.id"), nullable=False)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
+    pen_number: Mapped[str | None] = mapped_column(String(100))
+    pen_type: Mapped[str | None] = mapped_column(String(100))
+    max_animal_capacity: Mapped[int | None] = mapped_column(Integer)
+    location: Mapped[str | None] = mapped_column(Text)
     description: Mapped[str | None] = mapped_column(Text)
 
     farm: Mapped["Farm"] = relationship(back_populates="pans")

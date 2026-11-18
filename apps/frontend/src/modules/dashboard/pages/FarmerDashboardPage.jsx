@@ -2,8 +2,10 @@
 import { useEffect, useState } from 'react'
 import { Users, Milk, Droplet, Wallet, Plus, Activity, Stethoscope, RefreshCw, AlertCircle,
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import api from '../../../core/services/api.js'
 import StatCard from '../../../components/common/StatCard.jsx'
+import RoutePath from '../../../core/constants/routes.constant.js'
 
 function FarmerDashboardPage() {
   const [dashboard, setDashboard] = useState(null)
@@ -122,10 +124,10 @@ function FarmerDashboardPage() {
         <div className="rounded-xl border bg-white p-5">
           <h3 className="text-lg font-semibold">Quick Actions</h3>
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <QuickAction icon={Plus} label="Add Animal" to="/farmer/animals/add" />
-            <QuickAction icon={Droplet} label="Record Milk" to="/farmer/milk/add" />
-            <QuickAction icon={Activity} label="Log Feed" to="/farmer/feed" />
-            <QuickAction icon={Stethoscope} label="Vet Service" to="/farmer/health" />
+            <QuickAction icon={Plus} label="Add Animal" to={RoutePath.FARMER_ANIMALS} />
+            <QuickAction icon={Droplet} label="Record Milk" to={RoutePath.FARMER_MILK_PRODUCTION} />
+            <QuickAction icon={Activity} label="Log Feed" to={RoutePath.FARMER_FEED_MANAGEMENT} />
+            <QuickAction icon={Stethoscope} label="Vet Service" to={RoutePath.FARMER_DOCTORS} />
           </div>
         </div>
       </section>
@@ -157,12 +159,12 @@ function FarmerDashboardPage() {
 
 function QuickAction({ icon: Icon, label, to }) {
   return (
-    <a href={to} className="flex min-h-24 flex-col items-center justify-center gap-3 rounded-xl border p-3 text-center hover:border-green-300 hover:bg-green-50">
+    <Link to={to} className="flex min-h-24 flex-col items-center justify-center gap-3 rounded-xl border p-3 text-center hover:border-green-300 hover:bg-green-50">
       <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 text-green-800">
         <Icon size={20} />
       </span>
       <span className="text-sm font-medium text-gray-700">{label}</span>
-    </a>
+    </Link>
   )
 }
 

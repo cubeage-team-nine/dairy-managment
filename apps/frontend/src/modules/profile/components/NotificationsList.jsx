@@ -1,6 +1,6 @@
 function NotificationsList({ notifications, onMarkAsRead }) {
   if (notifications.length === 0) {
-    return <p className="text-sm text-muted-foreground">No notifications yet.</p>
+    return <p className="text-sm text-muted-foreground">No notifications are available yet.</p>
   }
 
   return (

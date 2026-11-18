@@ -1,230 +1,222 @@
-import { useMemo, useState } from 'react'
-import { Plus, Search, Wallet, TrendingUp, TrendingDown, Database } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { CalendarDays, Database, Plus, Search, TrendingDown, TrendingUp, Wallet } from 'lucide-react'
 import StatCard from '../../../components/common/StatCard'
 import CommonModal from '../../../components/modals/CommonModal'
 import CommonTable from '../../../components/tables/CommonTable'
-import TableActions from '../../../components/tables/TableActions'
 import TableEmptyState from '../../../components/tables/TableEmptyState'
 import TablePagination from '../../../components/tables/TablePagination'
+import { getAnimals } from '../../animals/animals.service'
+import { getMilkRecords } from '../../milk/milk.service'
+import { createExpense, createMilkIncome, deleteExpense, deleteMilkIncome, getExpenses, getMilkIncomeSummary, updateExpense, updateMilkIncome } from '../finance.service'
 
-const initial = [
-  { id: 1, date: '2026-10-15', type: 'Income',  category: 'Milk Sales',    description: 'Milk sold to dairy union', amount: 12000 },
-  { id: 2, date: '2026-10-14', type: 'Expense', category: 'Feed',          description: 'Green fodder purchase',    amount: 5500  },
-  { id: 3, date: '2026-10-12', type: 'Expense', category: 'Medicines',     description: 'Animal medicines',         amount: 2800  },
-  { id: 4, date: '2026-10-10', type: 'Income',  category: 'Cattle Sales',  description: 'Cattle sale',              amount: 30000 },
-  { id: 5, date: '2026-10-08', type: 'Expense', category: 'Labor',         description: 'Worker salary',            amount: 9500  },
-]
-const cats = ['Milk Sales', 'Cattle Sales', 'Feed', 'Medicines', 'Labor', 'Utilities', 'Maintenance', 'Others']
-const empty = { date: new Date().toISOString().slice(0, 10), type: 'Income', category: 'Milk Sales', description: '', amount: '' }
-const money = n => '₹ ' + Number(n || 0).toLocaleString('en-IN')
-const inp = 'mt-1 w-full rounded-lg border p-2.5 text-sm outline-none focus:border-emerald-500'
+const categories = ['Animal Feed', 'Medicines', 'Veterinary Services', 'Animal Purchase', 'Equipment', 'Transportation', 'Farm Maintenance', 'Other']
+const normalizeCategory = (value) => ({ Medicine: 'Medicines', 'Other Expenses': 'Other' }[value] || value)
+const paymentMethods = ['Cash', 'UPI', 'Bank Transfer', 'Card', 'Other']
+const blank = () => ({ title: '', category: 'Animal Feed', amount: '', expense_date: new Date().toISOString().slice(0, 10), animal_id: '', description: '', payment_method: 'Cash' })
+const blankIncome = () => ({ quantity: '', milk_rate: '', record_date: new Date().toISOString().slice(0, 10), milk_session: 'Morning', customer_name: '', description: '' })
+const money = (amount) => `₹ ${Number(amount || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`
+const list = (response) => response?.data?.items ?? response?.data ?? []
+const errorText = (error) => error.response?.data?.detail || 'Unable to load financial records.'
+const input = 'w-full rounded-lg border p-2.5 text-sm outline-none focus:border-emerald-500'
+const PAGE_SIZE = 10
 
 export default function FinanceManagement() {
-  const [data, setData] = useState(initial)
-  const [form, setForm] = useState(empty)
+  const [milkRecords, setMilkRecords] = useState([])
+  const [summary, setSummary] = useState(null)
+  const [expenses, setExpenses] = useState([])
+  const [animals, setAnimals] = useState([])
   const [search, setSearch] = useState('')
-  const [typeFilter, setTypeFilter] = useState('All')
-  const [modal, setModal] = useState('')   // '' | 'form' | 'view'
-  const [editId, setEditId] = useState(null)
-  const [viewRecord, setViewRecord] = useState(null)
+  const [category, setCategory] = useState('All')
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
   const [page, setPage] = useState(1)
-  const pageSize = 5
-  const set = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+  const [modal, setModal] = useState(false)
+  const [editing, setEditing] = useState(null)
+  const [form, setForm] = useState(blank)
+  const [incomeModal, setIncomeModal] = useState(false)
+  const [incomeEditing, setIncomeEditing] = useState(null)
+  const [incomeForm, setIncomeForm] = useState(blankIncome)
+  const [savingIncome, setSavingIncome] = useState(false)
 
-  const sum = t => data.filter(x => x.type === t).reduce((s, x) => s + Number(x.amount), 0)
-  const income = sum('Income'), expenses = sum('Expense'), profit = income - expenses
+  const load = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const [milkResponse, summaryResponse, expenseResponse, animalResponse] = await Promise.all([
+        getMilkRecords(), getMilkIncomeSummary(), getExpenses(), getAnimals(),
+      ])
+      setMilkRecords(list(milkResponse))
+      setSummary(summaryResponse.data)
+      setExpenses(list(expenseResponse))
+      setAnimals(list(animalResponse))
+    } catch (loadError) {
+      setError(errorText(loadError))
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+  useEffect(() => { load() }, [load])
 
-  const filtered = useMemo(() => data.filter(x =>
-    `${x.category} ${x.description} ${x.type}`.toLowerCase().includes(search.toLowerCase()) &&
-    (typeFilter === 'All' || x.type === typeFilter)
-  ), [data, search, typeFilter])
+  const income = Number(summary?.total_milk_value ?? 0)
+  const monthIncome = Number(summary?.current_month_milk_value ?? 0)
+  const totalExpenses = expenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0)
+  const filteredExpenses = useMemo(() => expenses.filter((expense) => {
+    const text = [expense.title, expense.category, expense.description, expense.payment_method, expense.animal_tag].join(' ').toLowerCase()
+    return text.includes(search.toLowerCase()) && (category === 'All' || normalizeCategory(expense.category) === category) &&
+      (!fromDate || expense.expense_date >= fromDate) && (!toDate || expense.expense_date <= toDate)
+  }), [expenses, search, category, fromDate, toDate])
+  const pageRows = filteredExpenses.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((expense) => ({ ...expense, category: normalizeCategory(expense.category) }))
 
-  const rows = filtered.slice((page - 1) * pageSize, page * pageSize)
-
-  const openAdd  = () => { setEditId(null); setForm(empty); setModal('form') }
-  const openEdit = x => { setEditId(x.id); setForm({ ...x, amount: String(x.amount) }); setModal('form') }
-  const openView = x => { setViewRecord(x); setModal('view') }
-  const close    = () => { setModal(''); setEditId(null); setForm(empty); setViewRecord(null) }
-
-  const save = e => {
-    e.preventDefault()
-    const item = { ...form, id: editId || Date.now(), amount: Number(form.amount) }
-    setData(d => editId ? d.map(x => x.id === editId ? item : x) : [item, ...d])
-    close()
+  const openAdd = () => { setEditing(null); setForm(blank()); setError(''); setNotice(''); setModal(true) }
+  const openEdit = (expense) => {
+    setEditing(expense)
+    setForm({ title: expense.title, category: normalizeCategory(expense.category), amount: String(expense.amount), expense_date: expense.expense_date, animal_id: expense.animal_id || '', description: expense.description || '', payment_method: expense.payment_method || 'Other' })
+    setError(''); setNotice(''); setModal(true)
+  }
+  const openAddIncome = () => { setIncomeEditing(null); setIncomeForm(blankIncome()); setError(''); setNotice(''); setIncomeModal(true) }
+  const openEditIncome = (record) => {
+    setIncomeEditing(record)
+    setIncomeForm({ quantity: String(record.total_quantity ?? ''), milk_rate: String(record.milk_rate ?? ''), record_date: record.record_date, milk_session: record.milk_session, customer_name: record.customer_name || '', description: record.description || '' })
+    setError(''); setNotice(''); setIncomeModal(true)
+  }
+  const changeIncome = (event) => setIncomeForm((current) => ({ ...current, [event.target.name]: event.target.value }))
+  const change = (event) => setForm((current) => ({ ...current, [event.target.name]: event.target.value }))
+  const saveExpense = async (event) => {
+    event.preventDefault()
+    setSaving(true); setError(''); setNotice('')
+    const payload = { ...form, amount: Number(form.amount), animal_id: form.animal_id || null, description: form.description.trim() || null, payment_method: form.payment_method || null }
+    try {
+      if (editing) await updateExpense(editing.id, payload)
+      else await createExpense(payload)
+      setModal(false); setEditing(null)
+      setNotice(editing ? 'Expense updated.' : 'Expense saved.')
+      await load()
+    } catch (saveError) {
+      setError(errorText(saveError))
+    } finally {
+      setSaving(false)
+    }
+  }
+  const removeExpense = async (expense) => {
+    if (!window.confirm(`Delete expense “${expense.title}”?`)) return
+    setError(''); setNotice('')
+    try {
+      await deleteExpense(expense.id)
+      setNotice('Expense deleted.')
+      await load()
+    } catch (deleteError) {
+      setError(errorText(deleteError))
+    }
+  }
+  const saveIncome = async (event) => {
+    event.preventDefault()
+    setSavingIncome(true); setError(''); setNotice('')
+    const payload = { ...incomeForm, quantity: Number(incomeForm.quantity), milk_rate: Number(incomeForm.milk_rate), customer_name: incomeForm.customer_name.trim() || null, description: incomeForm.description.trim() || null }
+    try {
+      if (incomeEditing) await updateMilkIncome(incomeEditing.id, payload)
+      else await createMilkIncome(payload)
+      setIncomeModal(false); setIncomeEditing(null)
+      setNotice(incomeEditing ? 'Milk income updated.' : 'Milk income saved.')
+      await load()
+    } catch (saveError) {
+      setError(errorText(saveError))
+    } finally {
+      setSavingIncome(false)
+    }
+  }
+  const removeIncome = async (record) => {
+    if (!window.confirm('Delete this milk income record?')) return
+    setError(''); setNotice('')
+    try {
+      await deleteMilkIncome(record.id)
+      setNotice('Milk income deleted.')
+      await load()
+    } catch (deleteError) {
+      setError(errorText(deleteError))
+    }
   }
 
-  const columns = [
-    { key: 'date', label: 'DATE' },
-    { key: 'type', label: 'TYPE', render: x =>
-      <span className={`rounded-full px-2 py-1 text-xs ${x.type === 'Income' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-600'}`}>{x.type}</span>
-    },
+  const expenseColumns = [
+    { key: 'expense_date', label: 'DATE' },
+    { key: 'title', label: 'EXPENSE', render: (expense) => <>{expense.title}<p className="text-xs text-slate-500">{expense.description || '—'}</p></> },
     { key: 'category', label: 'CATEGORY' },
-    { key: 'description', label: 'DESCRIPTION' },
-    { key: 'amount', label: 'AMOUNT', render: x =>
-      <span className={`font-semibold ${x.type === 'Income' ? 'text-emerald-600' : 'text-red-500'}`}>{money(x.amount)}</span>
-    },
-    { key: 'actions', label: 'ACTIONS', render: x =>
-      <TableActions
-        onEdit={() => openEdit(x)}
-        onView={() => openView(x)}
-        onDelete={() => window.confirm('Delete transaction?') && setData(d => d.filter(t => t.id !== x.id))}
-      />
-    },
+    { key: 'animal_tag', label: 'ANIMAL', render: (expense) => expense.animal_tag || 'Farm-wide' },
+    { key: 'payment_method', label: 'PAYMENT' },
+    { key: 'amount', label: 'AMOUNT', render: (expense) => <span className="font-semibold text-rose-700">{money(expense.amount)}</span> },
+    { key: 'actions', label: 'ACTIONS', render: (expense) => <div className="flex gap-2"><button type="button" onClick={() => openEdit(expense)} className="text-xs font-medium text-emerald-800 underline">Edit</button><button type="button" onClick={() => removeExpense(expense)} className="text-xs font-medium text-red-600 underline">Delete</button></div> },
+  ]
+  const incomeRows = milkRecords.map((record) => ({
+    ...record,
+  }))
+  const incomeColumns = [
+    { key: 'record_date', label: 'DATE' },
+    { key: 'milk_session', label: 'SESSION', render: (row) => row.milk_session || 'Milk Production' },
+    { key: 'customer_name', label: 'DAIRY / CUSTOMER', render: (row) => row.customer_name || '—' },
+    { key: 'total_quantity', label: 'QUANTITY', render: (row) => row.total_quantity == null ? '—' : `${row.total_quantity} L` },
+    { key: 'milk_rate', label: 'RATE / LITRE', render: (row) => row.milk_rate == null ? '—' : money(row.milk_rate) },
+    { key: 'milk_value', label: 'TOTAL AMOUNT', render: (row) => <span className="font-semibold text-emerald-700">{money(row.milk_value)}</span> },
+    { key: 'description', label: 'DESCRIPTION', render: (row) => row.description || '—' },
+    { key: 'actions', label: 'ACTIONS', render: (row) => row.milk_session ? <div className="flex gap-2"><button type="button" onClick={() => openEditIncome(row)} className="text-xs font-medium text-emerald-800 underline">Edit</button><button type="button" onClick={() => removeIncome(row)} className="text-xs font-medium text-red-600 underline">Delete</button></div> : '—' },
   ]
 
-  return (
-    <main className="min-h-screen bg-slate-50 p-4 text-slate-800 md:p-7">
-      <header className="mb-7 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Finance Management</h1>
-          <p className="mt-2 text-sm text-slate-500">Track income, expenses and manage your farm finances.</p>
-        </div>
-        <button type="button" onClick={openAdd} className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-3 text-white hover:bg-emerald-700">
-          <Plus size={18} /> Add Transaction
-        </button>
-      </header>
-
-      {/* Stat Cards */}
-      <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard title="Total Income"       value={money(income)}   subtitle="All income records"       icon={TrendingUp} />
-        <StatCard title="Total Expenses"     value={money(expenses)} subtitle="All expense records"      icon={TrendingDown} />
-        <StatCard title="Net Profit"         value={money(profit)}   subtitle="Income minus expenses"    icon={Wallet} />
-        <StatCard title="Total Transactions" value={data.length}     subtitle="Recorded transactions"    icon={Database} />
+  return <main className="min-h-screen bg-slate-50 p-4 text-slate-800 md:p-7">
+    <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div><h1 className="text-3xl font-bold">Finance Management</h1><p className="mt-2 text-sm text-slate-500">Track saved milk income and farm expenses.</p></div>
+      <div className="flex flex-wrap gap-2"><button type="button" onClick={openAddIncome} className="flex items-center gap-2 rounded-lg bg-emerald-700 px-4 py-3 text-white hover:bg-emerald-800"><Plus size={16}/>Add Milk Income</button><button type="button" onClick={openAdd} className="flex items-center gap-2 rounded-lg bg-rose-700 px-4 py-3 text-white hover:bg-rose-800"><Plus size={16}/>Add Expense</button></div>
+    </header>
+    {error && <div role="alert" className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700"><p>{error}</p><button type="button" onClick={load} className="mt-2 underline">Try again</button></div>}
+    {notice && <p role="status" className="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700">{notice}</p>}
+    <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <StatCard title="Total Milk Income" value={money(income)} subtitle="Saved milk value" icon={TrendingUp}/>
+      <StatCard title="This Month" value={money(monthIncome)} subtitle={summary?.month_start ? `Since ${summary.month_start}` : 'Current month milk value'} icon={Wallet}/>
+      <StatCard title="Total Expenses" value={money(totalExpenses)} subtitle={`${expenses.length} saved expenses`} icon={TrendingDown}/>
+      <StatCard title="Net Balance" value={money(income - totalExpenses)} subtitle="Milk income minus expenses" icon={Database}/>
+    </div>
+    <div className="mb-6 grid gap-5 md:grid-cols-2">
+      <section className="rounded-xl border bg-white p-5"><h2 className="mb-3 font-bold">Milk Income</h2><p className="text-2xl font-semibold text-emerald-700">{money(income)}</p><p className="mt-2 text-sm text-slate-500">Calculated from saved milk production records.</p></section>
+      <section className="rounded-xl border bg-white p-5"><h2 className="mb-3 font-bold">Expenses</h2><p className="text-2xl font-semibold text-rose-700">{money(totalExpenses)}</p><p className="mt-2 text-sm text-slate-500">Calculated from your saved expense records.</p></section>
+    </div>
+    <section className="mb-6 overflow-hidden rounded-xl border bg-white">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b p-5"><h2 className="font-bold">Farm Expenses</h2><div className="flex flex-wrap gap-2">
+        <div className="relative"><Search size={16} className="absolute left-3 top-2.5 text-slate-400"/><input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1) }} placeholder="Search expenses..." className="w-44 rounded-lg border py-2 pl-9 pr-3 text-sm"/></div>
+        <select value={category} onChange={(event) => { setCategory(event.target.value); setPage(1) }} className="rounded-lg border p-2 text-sm"><option>All</option>{categories.map((item) => <option key={item}>{item}</option>)}</select>
+        <label className="flex items-center gap-1 text-xs text-slate-500"><CalendarDays size={14}/>From<input type="date" value={fromDate} onChange={(event) => { setFromDate(event.target.value); setPage(1) }} className="rounded border p-1.5"/></label>
+        <label className="flex items-center gap-1 text-xs text-slate-500">To<input type="date" value={toDate} onChange={(event) => { setToDate(event.target.value); setPage(1) }} className="rounded border p-1.5"/></label>
+      </div></div>
+      <div className="p-4">{loading ? <p className="py-6 text-sm text-slate-500">Loading expenses…</p> : pageRows.length ? <CommonTable columns={expenseColumns} data={pageRows}/> : <TableEmptyState message="No expenses match your filters."/>}
+        {!loading && <div className="mt-4 border-t pt-4"><TablePagination page={page} pageSize={PAGE_SIZE} total={filteredExpenses.length} onPageChange={setPage}/></div>}
       </div>
-
-      {/* Charts */}
-      <div className="grid gap-5 md:grid-cols-2">
-        <section className="rounded-xl border bg-white p-5">
-          <h2 className="mb-5 font-bold">Income vs Expenses</h2>
-          {[['Income', income, 'bg-emerald-500'], ['Expenses', expenses, 'bg-orange-400']].map(([label, amount, color]) => (
-            <div key={label} className="mb-5">
-              <div className="mb-2 flex justify-between text-sm"><span>{label}</span><b>{money(amount)}</b></div>
-              <div className="h-3 rounded-full bg-slate-100">
-                <div style={{ width: `${amount / Math.max(income, expenses, 1) * 100}%` }} className={`h-3 rounded-full ${color}`} />
-              </div>
-            </div>
-          ))}
-        </section>
-
-        <section className="rounded-xl border bg-white p-5">
-          <h2 className="mb-4 font-bold">Expense Breakdown</h2>
-          {cats.map(c => {
-            const n = data.filter(x => x.category === c && x.type === 'Expense').reduce((s, x) => s + Number(x.amount), 0)
-            return n ? (
-              <div key={c} className="mb-4">
-                <div className="mb-1 flex justify-between text-sm"><span>{c}</span><span>{money(n)}</span></div>
-                <div className="h-2 rounded-full bg-slate-100">
-                  <div style={{ width: `${n / Math.max(expenses, 1) * 100}%` }} className="h-2 rounded-full bg-emerald-500" />
-                </div>
-              </div>
-            ) : null
-          })}
-        </section>
-      </div>
-
-      {/* Transactions Table */}
-      <section className="mt-5 overflow-hidden rounded-xl border bg-white">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b p-5">
-          <h2 className="font-bold">Transactions</h2>
-          <div className="flex flex-wrap gap-2">
-            <div className="relative">
-              <Search size={16} className="absolute left-3 top-2.5 text-slate-400" />
-              <input value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} placeholder="Search..." className="w-44 rounded-lg border py-2 pl-9 pr-3 text-sm outline-none focus:border-emerald-500" />
-            </div>
-            <select value={typeFilter} onChange={e => { setTypeFilter(e.target.value); setPage(1) }} className="rounded-lg border p-2 text-sm">
-              <option value="All">All</option>
-              <option>Income</option>
-              <option>Expense</option>
-            </select>
-          </div>
-        </div>
-        <div className="p-4">
-          {rows.length
-            ? <CommonTable columns={columns} data={rows} />
-            : <TableEmptyState message="No transactions found." />}
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4 text-xs text-slate-500">
-            <span>Showing {filtered.length ? (page - 1) * pageSize + 1 : 0} to {Math.min(page * pageSize, filtered.length)} of {filtered.length} transactions</span>
-            <TablePagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} />
-          </div>
-        </div>
-      </section>
-
-      {/* Category Summary Table */}
-      <section className="mt-5 rounded-xl border bg-white p-5">
-        <h2 className="mb-4 font-bold">Category Wise Summary</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[450px] text-left text-sm">
-            <thead className="bg-slate-50 text-slate-500">
-              <tr><th className="p-3">Category</th><th className="p-3">Income</th><th className="p-3">Expense</th></tr>
-            </thead>
-            <tbody className="divide-y">
-              {cats.map(c => {
-                const inc = data.filter(x => x.category === c && x.type === 'Income').reduce((s, x) => s + x.amount, 0)
-                const exp = data.filter(x => x.category === c && x.type === 'Expense').reduce((s, x) => s + x.amount, 0)
-                return (inc || exp) ? (
-                  <tr key={c}>
-                    <td className="p-3">{c}</td>
-                    <td className="p-3 text-emerald-600">{inc ? money(inc) : '—'}</td>
-                    <td className="p-3 text-red-500">{exp ? money(exp) : '—'}</td>
-                  </tr>
-                ) : null
-              })}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* Add / Edit Modal */}
-      <CommonModal isOpen={modal === 'form'} onClose={close} title={editId ? 'Edit Transaction' : 'Add Transaction'}>
-        <form onSubmit={save} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="text-sm">Date
-              <input required name="date" type="date" value={form.date} onChange={set} className={inp} />
-            </label>
-            <label className="text-sm">Type
-              <select name="type" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value, category: e.target.value === 'Income' ? 'Milk Sales' : 'Feed' }))} className={inp}>
-                <option>Income</option><option>Expense</option>
-              </select>
-            </label>
-            <label className="text-sm">Category
-              <select name="category" value={form.category} onChange={set} className={inp}>
-                {cats.map(c => <option key={c}>{c}</option>)}
-              </select>
-            </label>
-            <label className="text-sm">Amount (₹)
-              <input required name="amount" type="number" min="0" value={form.amount} onChange={set} className={inp} />
-            </label>
-            <label className="text-sm sm:col-span-2">Description
-              <input required name="description" value={form.description} onChange={set} className={inp} />
-            </label>
-          </div>
-          <div className="flex justify-end gap-3 border-t pt-4">
-            <button type="button" onClick={close} className="rounded-lg border px-4 py-2 text-sm">Cancel</button>
-            <button type="submit" className="rounded-lg bg-emerald-600 px-5 py-2 text-sm text-white">{editId ? 'Update' : 'Save Transaction'}</button>
-          </div>
-        </form>
-      </CommonModal>
-
-      {/* View Modal */}
-      <CommonModal isOpen={modal === 'view'} onClose={close} title="Transaction Details">
-        {viewRecord && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              {[['Date', 'date'], ['Type', 'type'], ['Category', 'category'], ['Amount', 'amount'], ['Description', 'description']].map(([label, key]) => (
-                <div key={key} className={key === 'description' ? 'col-span-2' : ''}>
-                  <p className="mb-1 text-xs font-medium text-slate-500">{label}</p>
-                  <p className="rounded-lg border bg-slate-50 p-2.5 text-sm">
-                    {key === 'amount' ? money(viewRecord[key]) : viewRecord[key]}
-                  </p>
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-end border-t pt-4">
-              <button type="button" onClick={close} className="rounded-lg border px-5 py-2 text-sm">Close</button>
-            </div>
-          </div>
-        )}
-      </CommonModal>
-    </main>
-  )
+    </section>
+    <section className="overflow-hidden rounded-xl border bg-white"><div className="border-b p-5"><h2 className="font-bold">Milk Income</h2></div><div className="p-4">{loading ? <p className="py-6 text-sm text-slate-500">Loading milk income…</p> : incomeRows.length ? <CommonTable columns={incomeColumns} data={incomeRows}/> : <TableEmptyState message="No milk income records found. Add an income record or save production records."/>}</div></section>
+    <CommonModal isOpen={modal} onClose={() => { if (!saving) setModal(false) }} title={editing ? 'Edit Expense' : 'Add Expense'}>
+      <form onSubmit={saveExpense} className="grid gap-4 sm:grid-cols-2">
+        <label className="text-sm font-medium sm:col-span-2">Expense Title<input required maxLength={150} value={form.title} name="title" onChange={change} className={input} placeholder="e.g. Cattle feed purchase"/></label>
+        <label className="text-sm font-medium">Category<select required value={form.category} name="category" onChange={change} className={input}>{categories.map((item) => <option key={item}>{item}</option>)}</select></label>
+        <label className="text-sm font-medium">Amount<input required min="0.01" step="0.01" type="number" value={form.amount} name="amount" onChange={change} className={input}/></label>
+        <label className="text-sm font-medium">Expense Date<input required type="date" value={form.expense_date} name="expense_date" onChange={change} className={input}/></label>
+        <label className="text-sm font-medium">Animal (optional)<select value={form.animal_id} name="animal_id" onChange={change} className={input}><option value="">Farm-wide expense</option>{animals.map((animal) => <option key={animal.id} value={animal.id}>{animal.tag_number} · {animal.animal_type}</option>)}</select></label>
+        <label className="text-sm font-medium">Payment Method<select value={form.payment_method} name="payment_method" onChange={change} className={input}>{paymentMethods.map((item) => <option key={item}>{item}</option>)}</select></label>
+        <label className="text-sm font-medium sm:col-span-2">Description / Notes<textarea rows={3} value={form.description} name="description" onChange={change} className={input}/></label>
+        {error && <p role="alert" className="rounded bg-red-50 p-2 text-sm text-red-700 sm:col-span-2">{error}</p>}
+        <div className="flex justify-end gap-2 border-t pt-3 sm:col-span-2"><button type="button" disabled={saving} onClick={() => setModal(false)} className="rounded-lg border px-4 py-2 text-sm">Cancel</button><button disabled={saving} className="rounded-lg bg-rose-700 px-4 py-2 text-sm text-white disabled:opacity-60">{saving ? 'Saving…' : editing ? 'Save Changes' : 'Save Expense'}</button></div>
+      </form>
+    </CommonModal>
+    <CommonModal isOpen={incomeModal} onClose={() => { if (!savingIncome) setIncomeModal(false) }} title={incomeEditing ? 'Edit Milk Income' : 'Add Milk Income'}>
+      <form onSubmit={saveIncome} className="grid gap-4 sm:grid-cols-2">
+        <label className="text-sm font-medium">Milk Quantity (Litres)<input required min="0.01" step="0.01" type="number" name="quantity" value={incomeForm.quantity} onChange={changeIncome} className={input}/></label>
+        <label className="text-sm font-medium">Milk Rate per Litre<input required min="0.01" step="0.01" type="number" name="milk_rate" value={incomeForm.milk_rate} onChange={changeIncome} className={input}/></label>
+        <div className="rounded-lg bg-emerald-50 p-3 sm:col-span-2"><span className="text-xs text-emerald-800">Total Amount (calculated)</span><p className="text-lg font-semibold text-emerald-900">{money((Number(incomeForm.quantity) || 0) * (Number(incomeForm.milk_rate) || 0))}</p></div>
+        <label className="text-sm font-medium">Date<input required type="date" name="record_date" value={incomeForm.record_date} onChange={changeIncome} className={input}/></label>
+        <label className="text-sm font-medium">Milk Session<select required name="milk_session" value={incomeForm.milk_session} onChange={changeIncome} className={input}><option>Morning</option><option>Evening</option></select></label>
+        <label className="text-sm font-medium sm:col-span-2">Dairy / Customer Name<input maxLength={150} name="customer_name" value={incomeForm.customer_name} onChange={changeIncome} className={input}/></label>
+        <label className="text-sm font-medium sm:col-span-2">Description<textarea rows={3} name="description" value={incomeForm.description} onChange={changeIncome} className={input}/></label>
+        {error && <p role="alert" className="rounded bg-red-50 p-2 text-sm text-red-700 sm:col-span-2">{error}</p>}
+        <div className="flex justify-end gap-2 border-t pt-3 sm:col-span-2"><button type="button" disabled={savingIncome} onClick={() => setIncomeModal(false)} className="rounded-lg border px-4 py-2 text-sm">Cancel</button><button disabled={savingIncome} className="rounded-lg bg-emerald-700 px-4 py-2 text-sm text-white disabled:opacity-60">{savingIncome ? 'Saving…' : incomeEditing ? 'Save Changes' : 'Save Milk Income'}</button></div>
+      </form>
+    </CommonModal>
+  </main>
 }

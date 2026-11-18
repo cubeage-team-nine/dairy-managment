@@ -11,6 +11,7 @@ class AccountStatus(str, enum.Enum):
     ACTIVE = "ACTIVE"
     INACTIVE = "INACTIVE"
     SUSPENDED = "SUSPENDED"
+    REJECTED = "REJECTED"
 
 
 class Gender(str, enum.Enum):

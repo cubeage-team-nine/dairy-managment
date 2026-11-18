@@ -10,10 +10,13 @@ from app.modules.breeding.model import BreedingRecord  # noqa: F401
 from app.modules.doctor_requests.model import DoctorRequest  # noqa: F401
 from app.modules.doctors.model import DoctorProfile  # noqa: F401
 from app.modules.farmers.model import FarmerProfile  # noqa: F401
-from app.modules.farms.model import Farm  # noqa: F401
+from app.modules.farms.model import Farm, FarmPhoto  # noqa: F401
 from app.modules.feed.model import FeedRecord, FeedType  # noqa: F401
+from app.modules.finance.model import FarmExpense  # noqa: F401
 from app.modules.health.model import HealthRecord  # noqa: F401
-from app.modules.mastitis.model import MastitisRecord  # noqa: F401
+from app.modules.mastitis.model import MastitisRecord, MastitisCaseHistory  # noqa: F401
 from app.modules.milk.model import MilkRecord  # noqa: F401
+from app.modules.milk_centers.model import MilkCenter  # noqa: F401
+from app.modules.notifications.model import Notification  # noqa: F401
 from app.modules.pans.model import Pan  # noqa: F401
 from app.modules.users.model import User  # noqa: F401

@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Mail, User, Phone, Stethoscope } from 'lucide-react'
 import { USER_ROLES, ROLE_LABELS } from '../../../core/constants/app.constants.js'
 import RoutePath from '../../../core/constants/routes.constant.js'
-import Logo from '../../../components/layout/Logo.jsx'
 import FormInput from '../../../components/forms/FormInput.jsx'
 import PasswordInput from '../../../components/forms/PasswordInput.jsx'
 import ErrorMessage from '../../../components/common/ErrorMessage.jsx'
@@ -63,13 +62,6 @@ function SignupPage() {
       <AuthMarketingPanel />
 
       <section className="flex min-h-screen flex-col">
-        {/* Mobile header */}
-        <div className="border-b border-border bg-card px-5 py-4 lg:hidden">
-          <Link to={RoutePath.HOME}>
-            <Logo />
-          </Link>
-        </div>
-
         <div className="flex flex-1 items-center justify-center px-5 py-10 sm:px-8 md:py-14 lg:px-12">
           <div className="w-full max-w-md">
             <div className="mb-8">

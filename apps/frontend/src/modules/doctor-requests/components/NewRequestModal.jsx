@@ -1,6 +1,7 @@
 // src/modules/doctor-requests/components/NewRequestModal.jsx
-import React, { useState } from 'react';
-import { X, Plus, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
+import { X, Plus } from 'lucide-react';
+import { showWarningToast } from '../../../core/services/toastNotifications.js';
 import {
   PRIORITY_TYPES,
   REQUEST_STATUS,
@@ -31,7 +32,7 @@ export default function NewRequestModal({ onClose, onAddRequest }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.farmerName || !formData.animalId || !formData.issueDescription) {
-      alert('Please fill out farmer name, animal ID, and issue description.');
+      showWarningToast('Please fill out farmer name, animal ID, and issue description.');
       return;
     }
 

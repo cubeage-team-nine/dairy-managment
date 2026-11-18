@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Index, Text
+from sqlalchemy import DateTime, Enum, ForeignKey, Index, String, Text, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -18,10 +18,14 @@ class DoctorRequest(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     doctor_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("doctor_profiles.id")
     )
+    selection_mode: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="MANUAL", server_default=text("'MANUAL'")
+    )
     animal_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("animals.id"), nullable=False
     )
     request_description: Mapped[str | None] = mapped_column(Text)
+    priority: Mapped[str] = mapped_column(String(20), nullable=False, default="MEDIUM")
     status: Mapped[RequestStatus] = mapped_column(
         Enum(RequestStatus, name="request_status"), nullable=False, default=RequestStatus.PENDING
     )

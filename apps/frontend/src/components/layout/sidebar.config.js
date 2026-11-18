@@ -7,6 +7,7 @@ import {
   Home,
   PawPrint,
   Wheat,
+  ClipboardList,
   Calculator,
   HeartPulse,
   Dna,
@@ -17,6 +18,7 @@ import {
   Settings,
   Inbox,
   UserCircle,
+  Bell,
 } from "lucide-react";
 
 import { USER_ROLES } from "../../core/constants/app.constants";
@@ -43,6 +45,12 @@ export const sidebarMenus = {
     },
 
     {
+      label: "Animals",
+      icon: PawPrint,
+      path: RoutePath.ADMIN_ANIMALS,
+    },
+
+    {
       label: "Farms",
       icon: Warehouse,
       path: RoutePath.ADMIN_FARMS,
@@ -53,6 +61,26 @@ export const sidebarMenus = {
       icon: Milk,
       path: RoutePath.ADMIN_MILK_CENTERS,
     },
+
+    {
+      label: "Feed Type Management",
+      icon: ClipboardList,
+      path: RoutePath.ADMIN_FEED_TYPES,
+    },
+
+    {
+      label: "Feed Management",
+      icon: Wheat,
+      path: RoutePath.ADMIN_FEED_MANAGEMENT,
+    },
+
+    {
+      label: "Reports",
+      icon: BarChart3,
+      path: RoutePath.ADMIN_REPORTS,
+    },
+
+    { label: "Notifications & Reminders", icon: Bell, path: RoutePath.ADMIN_NOTIFICATIONS },
 
     {
       label: "Settings",
@@ -140,6 +168,8 @@ export const sidebarMenus = {
       path: RoutePath.FARMER_MARKETPLACE,
     },
 
+    { label: "Notifications & Reminders", icon: Bell, path: RoutePath.FARMER_NOTIFICATIONS },
+
     {
       label: "Settings",
       icon: Settings,
@@ -188,6 +218,14 @@ export const sidebarMenus = {
       label: "Profile",
       icon: UserCircle,
       path: RoutePath.DOCTOR_PROFILE,
+    },
+
+    { label: "Notifications & Reminders", icon: Bell, path: RoutePath.DOCTOR_NOTIFICATIONS },
+
+    {
+      label: "Settings",
+      icon: Settings,
+      path: RoutePath.DOCTOR_SETTINGS,
     },
   ],
 };

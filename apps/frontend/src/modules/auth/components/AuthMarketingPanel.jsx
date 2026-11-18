@@ -1,6 +1,4 @@
-import { Link } from 'react-router-dom'
 import { BarChart3, Leaf } from 'lucide-react'
-import RoutePath from '../../../core/constants/routes.constant.js'
 
 const badges = [
   { label: 'Precision Insights', icon: BarChart3 },
@@ -25,11 +23,7 @@ function AuthMarketingPanel({
     >
       <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/5 to-[#003e2c]/90" />
 
-      <div className="relative z-10 px-10 py-9 xl:px-14">
-        <Link to={RoutePath.HOME} className="text-sm font-semibold text-white/70 hover:text-white transition-colors">
-          GauVikas
-        </Link>
-      </div>
+      <div className="relative z-10 px-10 py-9 xl:px-14" />
 
       <div className="relative z-10 max-w-xl px-10 pb-10 text-white xl:px-14 xl:pb-14">
         <h2 className="max-w-md text-3xl font-semibold leading-tight tracking-tight xl:text-4xl">

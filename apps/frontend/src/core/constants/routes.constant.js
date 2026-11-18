@@ -13,6 +13,7 @@ class RoutePath {
   static FEATURES = "/features";
   static CONTACT = "/contact";
   static LOGIN = "/login";
+  static ADMIN_LOGIN = "/admin/login";
   static SIGNUP = "/signup";
   static FORGOT_PASSWORD = "/forgot-password";
 
@@ -25,7 +26,12 @@ class RoutePath {
   static ADMIN_DOCTORS = `${this.ADMIN_BASE}/doctors`;
   static ADMIN_FARMS = `${this.ADMIN_BASE}/farms`;
   static ADMIN_MILK_CENTERS = `${this.ADMIN_BASE}/milk-centers`;
+  static ADMIN_FEED_TYPES = `${this.ADMIN_BASE}/feed-types`;
+  static ADMIN_ANIMALS = `${this.ADMIN_BASE}/animals`;
+  static ADMIN_FEED_MANAGEMENT = `${this.ADMIN_BASE}/feed-management`;
+  static ADMIN_REPORTS = `${this.ADMIN_BASE}/reports`;
   static ADMIN_SETTINGS = `${this.ADMIN_BASE}/settings`;
+  static ADMIN_NOTIFICATIONS = `${this.ADMIN_BASE}/notifications`;
 
   // ======================================================
   // FARMER
@@ -45,6 +51,7 @@ class RoutePath {
   static FARMER_REPORTS = `${this.FARMER_BASE}/reports`;
   static FARMER_MARKETPLACE = `${this.FARMER_BASE}/marketplace`;
   static FARMER_SETTINGS = `${this.FARMER_BASE}/settings`;
+  static FARMER_NOTIFICATIONS = `${this.FARMER_BASE}/notifications`;
 
   // ======================================================
   // DOCTOR
@@ -58,6 +65,7 @@ class RoutePath {
   static DOCTOR_MASTITIS_CASES = `${this.DOCTOR_BASE}/mastitis-cases`;
   static DOCTOR_PROFILE = `${this.DOCTOR_BASE}/profile`;
   static DOCTOR_SETTINGS = `${this.DOCTOR_BASE}/settings`;
+  static DOCTOR_NOTIFICATIONS = `${this.DOCTOR_BASE}/notifications`;
 
   // ======================================================
   // COMMON
